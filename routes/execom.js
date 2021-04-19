@@ -3,10 +3,11 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', () => {});
-router.patch('/', () => {});
 router.post('/login', () => {});
 router.get('/drive-details', () => {});
-router.post('/register-drive', () => {});
+router.get('/bill-details', () => {});
+router.post('/bill-details', () => {});
+router.post('send-email', () => {});
 router.post('/update-password', () => {});
 router.post('/logout', () => {});
 
