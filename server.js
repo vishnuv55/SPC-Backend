@@ -1,8 +1,8 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+const express = require('express');
+const mongoose = require('mongoose');
+const apiRouter = require('./routes/api');
 
-dotenv.config(); // Configure ENV variables
+require('dotenv').config();
 
 const app = express();
 
@@ -16,6 +16,8 @@ mongoose
   })
   .then(() => console.log('Database Connected Successfully')) // eslint-disable-line
   .catch((error) => console.log('ERROR : Database Connection Failed', error)); // eslint-disable-line
+
+app.use('/api', apiRouter);
 
 const PORT = process.env.PORT || 5000;
 
