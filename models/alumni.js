@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
@@ -18,6 +18,4 @@ const alumniSchema = new Schema({
   },
 });
 
-const alumni = mongoose.model('alumni', alumniSchema);
-
-export default alumni;
+module.exports = mongoose.model('alumni', alumniSchema);

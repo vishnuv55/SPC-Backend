@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
@@ -48,6 +48,4 @@ const studentSchema = new Schema({
   programming_languages: [String],
 });
 
-const student = mongoose.model('student', studentSchema);
-
-export default student;
+module.exports = mongoose.model('student', studentSchema);

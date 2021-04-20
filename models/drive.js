@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
@@ -33,5 +33,4 @@ const driveSchema = new Schema({
   },
 });
 
-const drive = mongoose.model('drive', driveSchema);
-export default drive;
+module.exports = mongoose.model('drive', driveSchema);

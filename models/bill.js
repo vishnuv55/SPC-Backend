@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
@@ -18,6 +18,4 @@ const billSchema = new Schema({
   },
 });
 
-const bill = mongoose.model('bill', billSchema);
-
-export default bill;
+module.exports = mongoose.model('bill', billSchema);
