@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
@@ -17,6 +17,5 @@ const execomSchema = new Schema({
     required: true,
   },
 });
-const execom = mongoose.model('execom', execomSchema);
 
-export default execom;
+module.exports = mongoose.model('execom', execomSchema);
