@@ -9,11 +9,13 @@
     "start-client": "npm start --prefix client",
     "build-client": "npm run build --prefix client",
     "dev": "concurrently \"npm run start-client\"  \"npm run dev-server\"",
-    "deploy": "npm i & npm i --prefix client && npm run build-client && npm run start"
+    "deploy": "npm i & npm i --prefix client && npm run build-client && npm run start",
+    "generate-hash": "node ./helpers/generate-hashed-password.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongoose": "^5.12.3"
