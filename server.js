@@ -1,10 +1,19 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
+const { handleError } = require('./helpers/error');
+
 const apiRouter = require('./routes/api');
 
 require('dotenv').config();
 
 const app = express();
+
+// Json parser
+app.use(express.json());
+
+// Cookie-parser
+app.use(cookieParser());
 
 // Initializing Database Connection
 mongoose
@@ -18,6 +27,9 @@ mongoose
   .catch((error) => console.log('ERROR : Database Connection Failed', error)); // eslint-disable-line
 
 app.use('/api', apiRouter);
+app.use((err, req, res, next) => {
+  handleError(err, res);
+});
 
 const PORT = process.env.PORT || 5000;
 
