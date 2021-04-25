@@ -29,7 +29,7 @@ const authentication = (userType) => {
 
     // Checking if token exist
     if (!token) {
-      throw new ErrorHandler(401, 'JWT Token is missing');
+      return next(new ErrorHandler(401, 'JWT Token is missing'));
     }
 
     // Verifying Token with JWT Secret
@@ -37,19 +37,19 @@ const authentication = (userType) => {
       userDetails = jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
       res.clearCookie('jwt');
-      throw new ErrorHandler(403, 'JWT Token is invalid');
+      return next(new ErrorHandler(403, 'JWT Token is invalid'));
     }
 
     // Checking if userType is valid
     if (userDetails.userType !== userType) {
-      throw new ErrorHandler(403, 'Forbidden Route');
+      return next(new ErrorHandler(403, 'Forbidden Route'));
     }
 
     // Validating Admin userId if user is admin
     if (userType === 'admin') {
       if (userDetails.userId !== process.env.ADMIN_ID) {
         res.clearCookie('jwt');
-        throw new ErrorHandler(400, 'JWT Token has Expired');
+        return next(new ErrorHandler(400, 'JWT Token has Expired'));
       }
       return next();
     }
@@ -60,7 +60,7 @@ const authentication = (userType) => {
     // Checking if a user exist
     if (!user) {
       res.clearCookie('jwt');
-      throw new ErrorHandler(401, `This ${userType} does not exist in database`);
+      return next(new ErrorHandler(401, `This ${userType} does not exist in database`));
     }
 
     // Storing user data to req.user
