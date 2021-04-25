@@ -263,6 +263,39 @@ const validateMongooseId = (id, fieldName = 'Id', isRequired = false) => {
   }
 };
 
+const validateProjects = (
+  projects,
+  minNameLength = 3,
+  maxNameLength = 50,
+  minDescriptionLength = 10,
+  maxDescriptionLength = 300,
+  canBeEmpty = true,
+  isRequired = false
+) => {
+  if (projects !== undefined && projects !== null) {
+    if (!Array.isArray(projects)) {
+      throw new ErrorHandler(400, `Projects must be of type array`);
+    }
+    if (projects.length !== 0) {
+      projects.forEach((project) => {
+        validateString(project.project_name, minNameLength, maxNameLength, 'Project Name', true);
+        validateString(
+          project.project_description,
+          minDescriptionLength,
+          maxDescriptionLength,
+          'Project Description',
+          false
+        );
+        validateString(project.url, 5, 1000, 'Project URL', false);
+      });
+    } else if (!canBeEmpty) {
+      throw new ErrorHandler(400, `Projects cannot be an empty array`);
+    }
+  } else if (isRequired) {
+    throw new ErrorHandler(400, `Projects field cannot be empty`);
+  }
+};
+
 module.exports = {
   validateString,
   validateStringArray,
@@ -276,4 +309,5 @@ module.exports = {
   validateMongooseId,
   validatePhone,
   validateName,
+  validateProjects,
 };
