@@ -2,13 +2,9 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const alumniSchema = new Schema({
+const ExecomSchema = new Schema({
   _id: Schema.Types.ObjectId,
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
+  designation: {
     type: String,
     required: true,
   },
@@ -18,4 +14,4 @@ const alumniSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model('alumni', alumniSchema);
+module.exports = mongoose.model('Execom', ExecomSchema);

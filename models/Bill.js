@@ -2,20 +2,20 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const execomSchema = new Schema({
+const BillSchema = new Schema({
   _id: Schema.Types.ObjectId,
-  designation: {
-    type: String,
+  bill_date: {
+    type: Date,
     required: true,
   },
-  username: {
-    type: String,
+  bill_amount: {
+    type: Number,
     required: true,
   },
-  password: {
+  bill_description: {
     type: String,
     required: true,
   },
 });
 
-module.exports = mongoose.model('execom', execomSchema);
+module.exports = mongoose.model('Bill', BillSchema);
