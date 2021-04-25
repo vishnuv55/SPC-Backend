@@ -1,12 +1,12 @@
 const express = require('express');
 
 const router = express.Router();
-
-const { login } = require('../controllers/admin');
+const authenticateAdmin = require('../middlewares/authentication')('admin');
+const { login, createStudent } = require('../controllers/admin');
 
 router.post('/login', login);
 router.get('/student-details', () => {});
-router.post('/create-student', () => {});
+router.post('/create-student', authenticateAdmin, createStudent);
 router.get('/drive-details', () => {});
 router.post('/drive-details', () => {});
 router.get('/bill-details', () => {});
