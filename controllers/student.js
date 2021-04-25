@@ -18,6 +18,7 @@ const editProfile = async (req, res, next) => {
     return next(req.error);
   }
 
+  // Getting data from req body
   const {
     id,
     name,
@@ -42,6 +43,7 @@ const editProfile = async (req, res, next) => {
     programming_languages,
   } = req.body;
 
+  // Validating each data
   try {
     validateMongooseId(id, 'Id', true);
     validateName(name);
@@ -68,6 +70,7 @@ const editProfile = async (req, res, next) => {
     return next(error);
   }
 
+  // Updating data to req.user
   if (name !== undefined) req.user.name = name;
   if (branch !== undefined) req.user.branch = branch;
   if (date_of_birth !== undefined) req.user.date_of_birth = date_of_birth;
@@ -90,6 +93,7 @@ const editProfile = async (req, res, next) => {
   if (projects !== undefined) req.user.projects = projects;
   if (programming_languages !== undefined) req.user.programming_languages = programming_languages;
 
+  // Saving data to database
   try {
     await req.user.save();
   } catch (err) {
