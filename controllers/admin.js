@@ -9,14 +9,9 @@ const login = async (req, res, next) => {
   try {
     const { password } = req.body;
     // To validate data in request object
-    try {
-      validateString(password, 6, 50, 'password', true);
-    } catch (err) {
-      throw new ErrorHandler(400, err.message);
-    }
+    validateString(password, 6, 50, 'password', true);
 
     const { ADMIN_PASSWORD, ADMIN_ID } = process.env;
-
     const isPasswordMatch = await bcrypt.compare(password, ADMIN_PASSWORD);
 
     if (isPasswordMatch) {
