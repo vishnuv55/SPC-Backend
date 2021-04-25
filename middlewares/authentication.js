@@ -1,7 +1,13 @@
+/*
+  This middleware is used to check whether the user is authenticated or not.
+  Function verifies the cookie and store user (student,execom) data in req.user if jwt matches.
+*/
 /* eslint-disable no-console */
+
+const jwt = require('jsonwebtoken');
 const student = require('../models/student');
 const execom = require('../models/execom');
-const jwt = require('jsonwebtoken');
+const { ErrorHandler } = require('../helpers/error');
 
 const authentication = (userType) => {
   let userModel;
@@ -11,7 +17,7 @@ const authentication = (userType) => {
     userModel = student;
   } else if (userType === 'execom') {
     userModel = execom;
-  } else if (userType !== 'admin') { 
+  } else if (userType !== 'admin') {
     throw new Error('Invalid UserType');
   }
 
@@ -23,8 +29,7 @@ const authentication = (userType) => {
 
     // Checking if token exist
     if (!token) {
-      console.log('jwt token missing');
-      return next();
+      throw new ErrorHandler(401, 'JWT Token is missing');
     }
 
     // Verifying Token with JWT Secret
@@ -32,33 +37,30 @@ const authentication = (userType) => {
       userDetails = jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
       res.clearCookie('jwt');
-      console.log('invalid jwt token');
-      return next();
+      throw new ErrorHandler(403, 'JWT Token is invalid');
     }
 
     // Checking if userType is valid
     if (userDetails.userType !== userType) {
-      console.log('forbidden route');
-      return next();
+      throw new ErrorHandler(403, 'Forbidden Route');
     }
 
     // Validating Admin userId if user is admin
     if (userType === 'admin') {
-      if (userDetails.userId !== process.env.ADMIN_USER_ID) {
+      if (userDetails.userId !== process.env.ADMIN_ID) {
         res.clearCookie('jwt');
-        console.log('jwt token expired');
+        throw new ErrorHandler(400, 'JWT Token has Expired');
       }
       return next();
     }
 
     // Finding the authenticated user
-    const user = await userModel.findOne({ _id: userDetails.user_id });
+    const user = await userModel.findOne({ _id: userDetails.userId });
 
     // Checking if a user exist
     if (!user) {
       res.clearCookie('jwt');
-      console.log('user does not exist');
-      return next();
+      throw new ErrorHandler(401, `This ${userType} does not exist in database`);
     }
 
     // Storing user data to req.user
