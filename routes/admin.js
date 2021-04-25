@@ -2,7 +2,9 @@ const express = require('express');
 
 const router = express.Router();
 
-router.post('/login', () => {});
+const { login } = require('../controllers/admin');
+
+router.post('/login', login);
 router.get('/student-details', () => {});
 router.post('/create-student', () => {});
 router.get('/drive-details', () => {});

@@ -9,8 +9,7 @@ readline.question('Enter the password : ', async (password) => {
     console.log('Enter a valid password'); // eslint-disable-line
   } else {
     const hashedPassword = await bcrypt.hash(password, 8);
-    // eslint-disable-next-line
-    console.log(`\nHashed Password is : ${hashedPassword}`);
+    console.log(`\nHashed Password is : ${hashedPassword}`); // eslint-disable-line
   }
   readline.close();
 });
