@@ -27,6 +27,7 @@ const studentSchema = new Schema({
   btech_cgpa: Number,
   number_of_backlogs: Number,
   email: String,
+  phone_number: String,
   address: {
     contact_address: String,
     zip: Number,

@@ -262,6 +262,49 @@ const validateMongooseId = (id, fieldName = 'Id', isRequired = false) => {
     throw new ErrorHandler(400, `${fieldName} field cannot be empty`);
   }
 };
+/**
+ *
+ * A validator function for Projects Array
+ * @param {String} projects Projects Array to be validated
+ * @param {Number} minNameLength Minimum length for Project Name
+ * @param {Number} maxNameLength Maximum length for Project Name
+ * @param {Number} minDescriptionLength Minimum length for Project Description
+ * @param {Number} maxDescriptionLength Maximum length for Project Description
+ * @param {Boolean} [canBeEmpty] Whether the array can be empty or not
+ * @param {Boolean} [isRequired] Is this field required or not
+ */
+const validateProjects = (
+  projects,
+  minNameLength = 3,
+  maxNameLength = 50,
+  minDescriptionLength = 10,
+  maxDescriptionLength = 300,
+  canBeEmpty = true,
+  isRequired = false
+) => {
+  if (projects !== undefined && projects !== null) {
+    if (!Array.isArray(projects)) {
+      throw new ErrorHandler(400, `Projects must be of type array`);
+    }
+    if (projects.length !== 0) {
+      projects.forEach((project) => {
+        validateString(project.project_name, minNameLength, maxNameLength, 'Project Name', true);
+        validateString(
+          project.project_description,
+          minDescriptionLength,
+          maxDescriptionLength,
+          'Project Description',
+          false
+        );
+        validateString(project.url, 5, 1000, 'Project URL', false);
+      });
+    } else if (!canBeEmpty) {
+      throw new ErrorHandler(400, `Projects cannot be an empty array`);
+    }
+  } else if (isRequired) {
+    throw new ErrorHandler(400, `Projects field cannot be empty`);
+  }
+};
 
 module.exports = {
   validateString,
@@ -276,4 +319,5 @@ module.exports = {
   validateMongooseId,
   validatePhone,
   validateName,
+  validateProjects,
 };
