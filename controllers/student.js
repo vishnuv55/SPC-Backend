@@ -127,8 +127,6 @@ const login = async (req, res, next) => {
       throw new ErrorHandler(404, 'Email not found');
     }
     // Comparing password
-    console.log(currentUser);
-    console.log(password);
     const isPasswordMatch = await bcrypt.compare(password, currentUser.password);
     if (!isPasswordMatch) {
       throw new ErrorHandler(401, 'Password does not match');
