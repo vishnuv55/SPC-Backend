@@ -36,11 +36,10 @@ const login = async (req, res, next) => {
     const cookieExpiryDate = getFutureDate(60);
     const { JWT_SECRET } = process.env;
     // For signing JWT token
-    const token = jwt.sign({ user_type: 'execom', userId: currentUser._id }, JWT_SECRET); // eslint-disable-line
+    const token = jwt.sign({ userType: 'execom', userId: currentUser._id }, JWT_SECRET); // eslint-disable-line
     // For setting httpOnly cookie
     res.cookie('jwt', token, {
       httpOnly: true,
-      secure: true,
       expires: cookieExpiryDate,
     });
     res.status(200).json({ message: 'Successfully Logged In' });
