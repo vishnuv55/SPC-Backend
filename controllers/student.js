@@ -1,4 +1,8 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const Student = require('../models/student');
 const { ErrorHandler } = require('../helpers/error');
+const { getFutureDate } = require('../helpers/date');
 const {
   validateMongooseId,
   validateName,
@@ -11,6 +15,7 @@ const {
   validateBoolean,
   validateStringArray,
   validateProjects,
+  validatePassword,
 } = require('../helpers/validation');
 
 const editProfile = async (req, res, next) => {
@@ -102,4 +107,43 @@ const editProfile = async (req, res, next) => {
   res.status(200).json({ message: 'Student Profile Updated Successfully' });
 };
 
-module.exports = { editProfile };
+const login = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  // Fetching data from request body
+  const { email, password } = req.body;
+
+  // Validating data received from request
+  try {
+    validatePassword(password, 'Password', true);
+    validateEmail(email, 'Email', true);
+  } catch (error) {
+    return next(error);
+  }
+  try {
+    const currentUser = await Student.findOne({ email });
+    if (!currentUser) {
+      throw new ErrorHandler(404, 'Email not found');
+    }
+    // Comparing password
+    const isPasswordMatch = await bcrypt.compare(password, currentUser.password);
+    if (!isPasswordMatch) {
+      throw new ErrorHandler(401, 'Password does not match');
+    }
+    const cookieExpiryDate = getFutureDate(60);
+    const { JWT_SECRET } = process.env;
+    // For signing JWT token
+    const token = jwt.sign({ userType: 'student', userId: currentUser._id }, JWT_SECRET); // eslint-disable-line
+    // For setting httpOnly cookie
+    res.cookie('jwt', token, {
+      httpOnly: true,
+      expires: cookieExpiryDate,
+    });
+    res.status(200).json({ message: 'Successfully Logged In' });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+module.exports = { editProfile, login };
