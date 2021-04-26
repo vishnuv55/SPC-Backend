@@ -49,4 +49,4 @@ const studentSchema = new Schema({
   programming_languages: [String],
 });
 
-module.exports = mongoose.model('student', studentSchema);
+module.exports = mongoose.model('Student', studentSchema);
