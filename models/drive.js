@@ -33,4 +33,4 @@ const driveSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model('drive', driveSchema);
+module.exports = mongoose.model('Drive', driveSchema);
