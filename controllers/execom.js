@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const Execom = require('../models/Execom');
+const Execom = require('../models/execom');
 const { ErrorHandler } = require('../helpers/error');
 const { getFutureDate } = require('../helpers/date');
 const { validateString, validatePassword } = require('../helpers/validation');

@@ -2,20 +2,20 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const AlumniSchema = new Schema({
+const billSchema = new Schema({
   _id: Schema.Types.ObjectId,
-  name: {
-    type: String,
+  bill_date: {
+    type: Date,
     required: true,
   },
-  email: {
-    type: String,
+  bill_amount: {
+    type: Number,
     required: true,
   },
-  password: {
+  bill_description: {
     type: String,
     required: true,
   },
 });
 
-module.exports = mongoose.model('Alumni', AlumniSchema);
+module.exports = mongoose.model('Bill', billSchema);

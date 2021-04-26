@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const ExecomSchema = new Schema({
+const execomSchema = new Schema({
   _id: Schema.Types.ObjectId,
   designation: {
     type: String,
@@ -14,4 +14,4 @@ const ExecomSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model('Execom', ExecomSchema);
+module.exports = mongoose.model('Execom', execomSchema);

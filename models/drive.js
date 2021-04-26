@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const DriveSchema = new Schema({
+const driveSchema = new Schema({
   _id: Schema.Types.ObjectId,
   company_name: {
     type: String,
@@ -33,4 +33,4 @@ const DriveSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model('Drive', DriveSchema);
+module.exports = mongoose.model('Drive', driveSchema);
