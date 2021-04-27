@@ -24,9 +24,9 @@ const postBillDetails = async (req, res, next) => {
     bill_amount,
     bill_description,
   });
-  try {
-    await bill.save();
-  } catch (error) {
+
+  const isBill = await bill.save();
+  if (!isBill) {
     return next(new ErrorHandler(500, 'Error saving bill details'));
   }
   res.status(201).json({ message: 'Bill created successfully' });
