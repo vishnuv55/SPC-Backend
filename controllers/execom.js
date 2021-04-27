@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const Drive = require('../models/drive');
 const Execom = require('../models/execom');
 const { ErrorHandler } = require('../helpers/error');
 const { getFutureDate } = require('../helpers/date');
@@ -47,5 +48,21 @@ const login = async (req, res, next) => {
     return next(error);
   }
 };
+const getDrives = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
 
-module.exports = { login };
+  // Getting all drives from database
+  let drives;
+  try {
+    drives = await Drive.find({});
+  } catch (error) {
+    return next(new ErrorHandler(500, 'Error Finding Drives'));
+  }
+
+  // Sending drives as response
+  res.status(200).json(drives);
+};
+
+module.exports = { login, getDrives };
