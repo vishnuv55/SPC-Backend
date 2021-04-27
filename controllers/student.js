@@ -1,10 +1,10 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Student = require('../models/student');
+const Drive = require('../models/drive');
 const { ErrorHandler } = require('../helpers/error');
 const { getFutureDate } = require('../helpers/date');
 const {
-  validateMongooseId,
   validateName,
   validateString,
   validateDateOfBirth,
@@ -16,6 +16,10 @@ const {
   validateStringArray,
   validateProjects,
   validatePassword,
+  validateMarks,
+  validateUrl,
+  validateAddress,
+  validateMongooseId,
 } = require('../helpers/validation');
 
 const editProfile = async (req, res, next) => {
@@ -25,7 +29,6 @@ const editProfile = async (req, res, next) => {
 
   // Getting data from req body
   const {
-    id,
     name,
     branch,
     date_of_birth,
@@ -34,7 +37,6 @@ const editProfile = async (req, res, next) => {
     plus_two_mark,
     btech_cgpa,
     number_of_backlogs,
-    email,
     phone_number,
     address,
     linkedin,
@@ -50,21 +52,19 @@ const editProfile = async (req, res, next) => {
 
   // Validating each data
   try {
-    validateMongooseId(id, 'Id', true);
     validateName(name);
     validateString(branch, 2, 100, 'Branch');
     validateDateOfBirth(date_of_birth, 16);
     validateGender(gender);
-    validateString(tenth_mark, 1, 10, '10th mark');
-    validateString(plus_two_mark, 1, 10, '12th mark');
-    validateString(btech_cgpa, 1, 10, 'BTech CGPA');
+    validateMarks(tenth_mark, '10th mark');
+    validateMarks(plus_two_mark, '12th mark');
+    validateNumber(btech_cgpa, 0, 100, 'BTech CGPA');
     validateNumber(number_of_backlogs, 0, 50, 'Number of backlogs');
-    validateEmail(email);
     validatePhone(phone_number);
-    validateString(address, 50, 1000, 'Address');
-    validateString(linkedin, 5, 100, 'LinkedIn URL');
-    validateString(twitter, 5, 100, 'Twitter URL');
-    validateString(github, 5, 100, 'Github URL');
+    validateAddress(address, 'Address');
+    validateUrl(linkedin, 'LinkedIn URL');
+    validateUrl(twitter, 'Twitter URL');
+    validateUrl(github, 'Github URL');
     validateName(guardian_name, 'Guardian Name');
     validatePhone(guardian_contact_number, 'Guardian Contact Number');
     validateBoolean(placement_status, 'Placement Status');
@@ -84,7 +84,6 @@ const editProfile = async (req, res, next) => {
   if (plus_two_mark !== undefined) req.user.plus_two_mark = plus_two_mark;
   if (btech_cgpa !== undefined) req.user.btech_cgpa = btech_cgpa;
   if (number_of_backlogs !== undefined) req.user.number_of_backlogs = number_of_backlogs;
-  if (email !== undefined) req.user.email = email;
   if (phone_number !== undefined) req.user.phone_number = phone_number;
   if (address !== undefined) req.user.address = address;
   if (twitter !== undefined) req.user.twitter = twitter;
@@ -146,4 +145,56 @@ const login = async (req, res, next) => {
   }
 };
 
-module.exports = { editProfile, login };
+const getStudentDetails = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  // Splitting confidential data from req,user
+  const { password, __v, ...studentData } = req.user.toObject();
+
+  res.status(200).json(studentData);
+};
+
+const registerDrive = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  // Getting id from req body
+  const { id } = req.body;
+
+  // Validating id
+  try {
+    validateMongooseId(id, 'Drive ID', true);
+  } catch (error) {
+    return next(error);
+  }
+
+  // Getting student register number from req.user
+  const { register_number } = req.user;
+
+  // Finding drive
+  const drive = await Drive.findById(id);
+  if (!drive) {
+    return next(new ErrorHandler(500, 'Error finding Drive'));
+  }
+
+  // Checking if student is already registered
+  const isStudentRegistered = drive.registered_students.includes(register_number);
+  if (isStudentRegistered) {
+    return next(new ErrorHandler(403, 'You are already registered'));
+  }
+
+  // Updating student list in drive
+  drive.registered_students.push(register_number);
+
+  // Saving updates to database
+  try {
+    await drive.save();
+  } catch (error) {
+    return next(new ErrorHandler(500, 'Error saving to database'));
+  }
+  // Sending success response
+  res.status(200).json({ message: 'Successfully registered to drive' });
+};
+
+module.exports = { editProfile, login, getStudentDetails, registerDrive };

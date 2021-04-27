@@ -31,6 +31,7 @@ const driveSchema = new Schema({
     btech_min_cgpa: Number,
     number_of_backlogs: Number,
   },
+  registered_students: [String],
 });
 
 module.exports = mongoose.model('Drive', driveSchema);

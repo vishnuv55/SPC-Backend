@@ -318,8 +318,9 @@ const validateMarks = (marks, fieldName, isRequired) => {
     if (typeof marks !== 'object') {
       throw new ErrorHandler(400, `${fieldName} must be of type Object`);
     } else {
-      validateNumber(marks.percentage, 0, 100, `Percentage in ${fieldName}`, false);
-      validateNumber(marks.cgpa, 0, 100, `CGPA in ${fieldName}`, false);
+      const { percentage, cgpa } = marks;
+      validateNumber(percentage, 0, 100, `Percentage in ${fieldName}`, false);
+      validateNumber(cgpa, 0, 100, `CGPA in ${fieldName}`, false);
     }
   } else if (isRequired) {
     throw new ErrorHandler(400, `${fieldName} field cannot be empty`);
@@ -347,6 +348,27 @@ const validateUrl = (url, fieldName = 'URL', isRequired = false) => {
     throw new ErrorHandler(400, `${fieldName} field cannot be empty`);
   }
 };
+
+/**
+ *
+ * A validator function to validate Address
+ * @param {Object} address Address object to be validated
+ * @param {String} [fieldName] Field name to be displayed in error message.
+ * @param {Boolean} [isRequired] Is this field required or not
+ */
+const validateAddress = (address, fieldName = 'Address', isRequired = false) => {
+  if (address !== undefined && address !== null) {
+    const { line_one, line_two, state, zip } = address;
+
+    validateString(line_one, 3, 120, `Line one in ${fieldName}`, true);
+    validateString(line_two, 3, 120, `Line two in ${fieldName}`, true);
+    validateString(state, 3, 30, `state in ${fieldName}`, true);
+    validateString(zip, 6, 6, `zip in ${fieldName}`, true);
+  } else if (isRequired) {
+    throw new Error(`${fieldName} field cannot be empty`);
+  }
+};
+
 module.exports = {
   validateMarks,
   validateString,
@@ -363,4 +385,5 @@ module.exports = {
   validateName,
   validateProjects,
   validateUrl,
+  validateAddress,
 };
