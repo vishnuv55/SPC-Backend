@@ -2,9 +2,18 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const Student = require('../models/student');
+const Drive = require('../models/drive');
 const { getFutureDate } = require('../helpers/date');
 const { ErrorHandler } = require('../helpers/error');
-const { validateString, validateName, validateEmail } = require('../helpers/validation');
+const {
+  validateString,
+  validateName,
+  validateEmail,
+  validateDate,
+  validateMarks,
+  validateNumber,
+  validateUrl,
+} = require('../helpers/validation');
 
 // Login controller
 const login = async (req, res, next) => {
@@ -88,9 +97,72 @@ const createStudent = async (req, res, next) => {
   try {
     await student.save();
   } catch (error) {
-    return next(ErrorHandler(500, 'Error saving Student to database'));
+    return next(new ErrorHandler(500, 'Error saving Student to database'));
   }
   res.status(400).json({ message: 'Student Created' });
 };
 
-module.exports = { login, createStudent };
+const addNewDrive = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+
+  // Get data from req.body
+  const { company_name, contact_email, drive_date, location, url, requirements } = req.body;
+
+  // validate data
+  try {
+    validateString(company_name, 3, 100, 'Company Name', true);
+    validateEmail(contact_email, 'Contact Email', true);
+    validateDate(drive_date, 'Drive Date', true);
+    validateString(location, 3, 100, 'Location', true);
+    validateUrl(url, 'URL', true);
+    validateString(requirements.gender, 3, 10, 'Preferred gender', true);
+    validateMarks(requirements.plus_two_mark, '+2 mark', true);
+    validateMarks(requirements.tenth_mark, '10th mark', true);
+    validateNumber(requirements.btech_min_cgpa, 0, 100, 'Minimum CGPA', true);
+    validateNumber(requirements.number_of_backlogs, 0, 50, 'Number of backlogs', true);
+  } catch (error) {
+    return next(error);
+  }
+
+  // creating new drive data
+  const drive = new Drive({
+    _id: mongoose.Types.ObjectId(),
+    company_name,
+    contact_email,
+    drive_date: new Date(drive_date),
+    location,
+    url,
+    requirements,
+  });
+
+  // Saving drive to database
+  try {
+    await drive.save();
+  } catch (err) {
+    return next(new ErrorHandler(500, 'Error saving Student to database'));
+  }
+
+  // Sending success response
+  res.status(400).json({ message: 'Drive saved successfully' });
+};
+
+const getDrives = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+
+  // Getting all drives from database
+  let drives;
+  try {
+    drives = await Drive.find({});
+  } catch (error) {
+    return next(new ErrorHandler(500, 'Error Finding Drives'));
+  }
+
+  // Sending drives as response
+  res.status(200).json(drives);
+};
+
+module.exports = { login, createStudent, addNewDrive, getDrives };
