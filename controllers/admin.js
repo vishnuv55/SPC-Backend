@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const Student = require('../models/student');
 const Drive = require('../models/drive');
+const Execom = require('../models/execom');
 const { getFutureDate } = require('../helpers/date');
 const { ErrorHandler } = require('../helpers/error');
 const {
@@ -13,6 +14,7 @@ const {
   validateMarks,
   validateNumber,
   validateUrl,
+  validatePassword,
 } = require('../helpers/validation');
 
 // Login controller
@@ -165,4 +167,86 @@ const getDrives = async (req, res, next) => {
   res.status(200).json(drives);
 };
 
-module.exports = { login, createStudent, addNewDrive, getDrives };
+const updateStudentPassword = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+
+  // Getting data from req.body
+  const { email, password } = req.body;
+
+  // validate Data
+  try {
+    validateEmail(email, 'Email ID', true);
+    validatePassword(password, 'Password', true);
+  } catch (error) {
+    return next(error);
+  }
+
+  // Hashing password
+  let hashedPassword;
+  try {
+    hashedPassword = await bcrypt.hash(password, 8);
+  } catch (error) {
+    return next(new ErrorHandler(500, 'Error hashing password'));
+  }
+
+  // Finding and updating student password
+  const updatePassword = await Student.findOneAndUpdate({ email }, { password: hashedPassword });
+
+  // Checking if user exist
+  if (!updatePassword) {
+    return next(new ErrorHandler(400, 'Student with the email does not exist'));
+  }
+
+  // Sending success response
+  res.status(200).json({ message: 'Password changed successfully' });
+};
+
+const updateExecomPassword = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+
+  // Getting data from req.body
+  const { designation, password } = req.body;
+
+  // validate Data
+  try {
+    validateString(designation, 5, 50, 'Designation', true);
+    validatePassword(password, 'Password', true);
+  } catch (error) {
+    return next(error);
+  }
+
+  // Hashing password
+  let hashedPassword;
+  try {
+    hashedPassword = await bcrypt.hash(password, 8);
+  } catch (error) {
+    return next(new ErrorHandler(500, 'Error hashing password'));
+  }
+
+  // Finding and updating execom password
+  const updatePassword = await Execom.findOneAndUpdate(
+    { designation },
+    { password: hashedPassword }
+  );
+
+  // Checking if user exist
+  if (!updatePassword) {
+    return next(new ErrorHandler(400, 'Execom with the designation does not exist'));
+  }
+
+  // Sending success response
+  res.status(200).json({ message: 'Password changed successfully' });
+};
+
+module.exports = {
+  login,
+  createStudent,
+  addNewDrive,
+  getDrives,
+  updateStudentPassword,
+  updateExecomPassword,
+};
