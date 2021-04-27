@@ -10,6 +10,7 @@ const {
   updateStudentPassword,
   updateExecomPassword,
 } = require('../controllers/admin');
+const { logout } = require('../controllers/user');
 
 router.post('/login', login);
 router.get('/student-details', () => {});
@@ -23,6 +24,6 @@ router.get('/alumni-details', () => {});
 router.post('/alumni-details', () => {});
 router.post('/update-student-password', authenticateAdmin, updateStudentPassword);
 router.post('/update-execom-password', authenticateAdmin, updateExecomPassword);
-router.post('/logout', () => {});
+router.post('/logout', authenticateAdmin, logout);
 
 module.exports = router;
