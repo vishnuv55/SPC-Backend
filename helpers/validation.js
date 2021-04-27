@@ -306,7 +306,49 @@ const validateProjects = (
   }
 };
 
+/**
+ *
+ * Validator function for 10th and 12th mark object
+ * @param {object} marks mark object to be validated
+ * @param {string} fieldName Field name to be displayed in error message
+ * @param {boolean} isRequired Is this field required or not
+ */
+const validateMarks = (marks, fieldName, isRequired) => {
+  if (marks !== undefined && marks !== '') {
+    if (typeof marks !== 'object') {
+      throw new ErrorHandler(400, `${fieldName} must be of type Object`);
+    } else {
+      validateNumber(marks.percentage, 0, 100, `Percentage in ${fieldName}`, false);
+      validateNumber(marks.cgpa, 0, 100, `CGPA in ${fieldName}`, false);
+    }
+  } else if (isRequired) {
+    throw new ErrorHandler(400, `${fieldName} field cannot be empty`);
+  }
+};
+
+/**
+ *
+ * A validator function to validate URL
+ * @param {String} url URL to be validated
+ * @param {String} [fieldName] Field name to be displayed in error message.
+ * @param {Boolean} [isRequired] Is this field required or not
+ */
+const validateUrl = (url, fieldName = 'URL', isRequired = false) => {
+  if (url !== undefined && url !== '') {
+    const regexp = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
+    if (typeof url !== 'string') {
+      throw new ErrorHandler(400, `${fieldName} must be of type string`);
+    } else if (url.length > 500) {
+      throw new ErrorHandler(400, `${fieldName} must not exceed the 100 character limit`);
+    } else if (!regexp.test(url)) {
+      throw new ErrorHandler(400, `Invalid ${fieldName}`);
+    }
+  } else if (isRequired) {
+    throw new ErrorHandler(400, `${fieldName} field cannot be empty`);
+  }
+};
 module.exports = {
+  validateMarks,
   validateString,
   validateStringArray,
   validateNumber,
@@ -320,4 +362,5 @@ module.exports = {
   validatePhone,
   validateName,
   validateProjects,
+  validateUrl,
 };
