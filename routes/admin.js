@@ -2,6 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const authenticateAdmin = require('../middlewares/authentication')('admin');
+const { postBillDetails, getBillDetails } = require('../controllers/bill');
 const {
   login,
   createStudent,
@@ -17,8 +18,8 @@ router.get('/student-details', () => {});
 router.post('/create-student', authenticateAdmin, createStudent);
 router.get('/drive-details', authenticateAdmin, getDrives);
 router.post('/drive-details', authenticateAdmin, addNewDrive);
-router.get('/bill-details', () => {});
-router.post('/bill-details', () => {});
+router.get('/bill-details', authenticateAdmin, getBillDetails);
+router.post('/bill-details', authenticateAdmin, postBillDetails);
 router.post('/send-email', () => {});
 router.get('/alumni-details', () => {});
 router.post('/alumni-details', () => {});
