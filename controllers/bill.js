@@ -1,7 +1,12 @@
 const mongoose = require('mongoose');
 const Bill = require('../models/bill');
 const { ErrorHandler } = require('../helpers/error');
-const { validateDate, validateNumber, validateString } = require('../helpers/validation');
+const {
+  validateDate,
+  validateNumber,
+  validateString,
+  validateMongooseId,
+} = require('../helpers/validation');
 
 // Post-gill-details
 const postBillDetails = async (req, res, next) => {
@@ -47,4 +52,22 @@ const getBillDetails = async (req, res, next) => {
   res.status(200).json(bills);
 };
 
-module.exports = { postBillDetails, getBillDetails };
+const deleteBill = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  const { id: billId } = req.params;
+  try {
+    validateMongooseId(billId, 'Id', true);
+  } catch (error) {
+    return next(error);
+  }
+
+  const bill = await Bill.findOneAndDelete({ _id: billId });
+  if (!bill) {
+    return next(new ErrorHandler(500, 'Error deleting Bill'));
+  }
+  res.status(201).json({ message: 'Bill deleted successfully' });
+};
+
+module.exports = { postBillDetails, getBillDetails, deleteBill };
