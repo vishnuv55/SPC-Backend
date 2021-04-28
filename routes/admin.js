@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const authenticateAdmin = require('../middlewares/authentication')('admin');
-const { postBillDetails, getBillDetails } = require('../controllers/bill');
+const { postBillDetails, getBillDetails, deleteBill } = require('../controllers/bill');
 const {
   login,
   createStudent,
@@ -25,6 +25,7 @@ router.get('/alumni-details', () => {});
 router.post('/alumni-details', () => {});
 router.post('/update-student-password', authenticateAdmin, updateStudentPassword);
 router.post('/update-execom-password', authenticateAdmin, updateExecomPassword);
+router.delete('/bill/:id', authenticateAdmin, deleteBill);
 router.post('/logout', authenticateAdmin, logout);
 
 module.exports = router;
