@@ -15,6 +15,7 @@ const {
   validateNumber,
   validateUrl,
   validatePassword,
+  validateMongooseId,
 } = require('../helpers/validation');
 
 // Login controller
@@ -241,12 +242,29 @@ const updateExecomPassword = async (req, res, next) => {
   // Sending success response
   res.status(200).json({ message: 'Password changed successfully' });
 };
+const deleteDrive = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  const { id: driveId } = req.params;
+  try {
+    validateMongooseId(driveId, 'Id', true);
+  } catch (error) {
+    return next(error);
+  }
 
+  const bill = await Drive.findOneAndDelete({ _id: driveId });
+  if (!bill) {
+    return next(new ErrorHandler(500, 'Error deleting Drive'));
+  }
+  res.status(201).json({ message: 'Drive deleted successfully' });
+};
 module.exports = {
   login,
   createStudent,
   addNewDrive,
   getDrives,
+  deleteDrive,
   updateStudentPassword,
   updateExecomPassword,
 };
