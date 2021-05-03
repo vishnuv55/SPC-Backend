@@ -12,6 +12,7 @@ const {
   updateExecomPassword,
 } = require('../controllers/admin');
 const { logout } = require('../controllers/user');
+const { sendMail } = require('../controllers/mail');
 
 router.post('/login', login);
 router.get('/student-details', () => {});
@@ -20,7 +21,7 @@ router.get('/drive-details', authenticateAdmin, getDrives);
 router.post('/drive-details', authenticateAdmin, addNewDrive);
 router.get('/bill-details', authenticateAdmin, getBillDetails);
 router.post('/bill-details', authenticateAdmin, postBillDetails);
-router.post('/send-email', () => {});
+router.post('/send-email', authenticateAdmin, sendMail);
 router.get('/alumni-details', () => {});
 router.post('/alumni-details', () => {});
 router.post('/update-student-password', authenticateAdmin, updateStudentPassword);
