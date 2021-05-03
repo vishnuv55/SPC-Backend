@@ -103,7 +103,7 @@ const createStudent = async (req, res, next) => {
   } catch (error) {
     return next(new ErrorHandler(500, 'Error saving Student to database'));
   }
-  res.status(400).json({ message: 'Student Created' });
+  res.status(200).json({ message: 'Student Created' });
 };
 
 const addNewDrive = async (req, res, next) => {
@@ -149,7 +149,7 @@ const addNewDrive = async (req, res, next) => {
   }
 
   // Sending success response
-  res.status(400).json({ message: 'Drive saved successfully' });
+  res.status(200).json({ message: 'Drive saved successfully' });
 };
 
 const getDrives = async (req, res, next) => {
