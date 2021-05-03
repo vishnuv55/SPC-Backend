@@ -11,11 +11,12 @@ const {
   deleteDrive,
   updateStudentPassword,
   updateExecomPassword,
+  getRegisteredStudents,
 } = require('../controllers/admin');
 const { logout } = require('../controllers/user');
 
 router.post('/login', login);
-router.get('/student-details', () => {});
+router.post('/student-details', authenticateAdmin, getRegisteredStudents);
 router.post('/create-student', authenticateAdmin, createStudent);
 router.get('/drive-details', authenticateAdmin, getDrives);
 router.post('/drive-details', authenticateAdmin, addNewDrive);
