@@ -8,17 +8,20 @@ const {
   createStudent,
   addNewDrive,
   getDrives,
+  deleteDrive,
   updateStudentPassword,
   updateExecomPassword,
+  getRegisteredStudents,
 } = require('../controllers/admin');
 const { logout } = require('../controllers/user');
 const { sendMail } = require('../controllers/mail');
 
 router.post('/login', login);
-router.get('/student-details', () => {});
+router.post('/student-details', authenticateAdmin, getRegisteredStudents);
 router.post('/create-student', authenticateAdmin, createStudent);
 router.get('/drive-details', authenticateAdmin, getDrives);
 router.post('/drive-details', authenticateAdmin, addNewDrive);
+router.delete('/drive/:id', authenticateAdmin, deleteDrive);
 router.get('/bill-details', authenticateAdmin, getBillDetails);
 router.post('/bill-details', authenticateAdmin, postBillDetails);
 router.post('/send-email', authenticateAdmin, sendMail);

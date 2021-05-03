@@ -15,6 +15,8 @@ const {
   validateNumber,
   validateUrl,
   validatePassword,
+  validateMongooseId,
+  validateBoolean,
 } = require('../helpers/validation');
 
 // Login controller
@@ -241,12 +243,85 @@ const updateExecomPassword = async (req, res, next) => {
   // Sending success response
   res.status(200).json({ message: 'Password changed successfully' });
 };
+const deleteDrive = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  const { id: driveId } = req.params;
+  try {
+    validateMongooseId(driveId, 'Id', true);
+  } catch (error) {
+    return next(error);
+  }
 
+  const drive = await Drive.findOneAndDelete({ _id: driveId });
+  if (!drive) {
+    return next(new ErrorHandler(500, 'Error deleting Drive'));
+  }
+  res.status(201).json({ message: 'Drive deleted successfully' });
+};
+
+const getRegisteredStudents = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  // Fetching data from request
+  const {
+    id,
+    branch,
+    gender,
+    dob,
+    tenth_mark,
+    plus_two_mark,
+    btech_cgpa,
+    number_of_backlogs,
+    email,
+    phone_number,
+  } = req.body;
+  try {
+    validateMongooseId(id, 'ID', true);
+    validateBoolean(branch, 'Branch', true);
+    validateBoolean(gender, 'Gender', true);
+    validateBoolean(dob, 'Date of Birth', true);
+    validateBoolean(tenth_mark, 'Tenth Mark', true);
+    validateBoolean(plus_two_mark, 'Plus Two Mark', true);
+    validateBoolean(btech_cgpa, 'Btech CGPA', true);
+    validateBoolean(number_of_backlogs, 'Number of Backlogs', true);
+    validateBoolean(email, 'Email', true);
+    validateBoolean(phone_number, 'Phone Number', true);
+  } catch (error) {
+    return next(error);
+  }
+  const requirements = [
+    branch && 'branch',
+    gender && 'gender',
+    dob && 'dob',
+    tenth_mark && 'tenth_mark',
+    plus_two_mark && 'plus_two_mark',
+    btech_cgpa && 'btech_cgpa',
+    number_of_backlogs && 'number_of_backlogs',
+    email && 'email',
+    phone_number && 'phone_number',
+  ];
+  const { registered_students } = await Drive.findOne({ _id: id });
+  if (!registered_students) {
+    return next(new ErrorHandler(500, 'Unable to Locate Drive'));
+  }
+  const students = await Student.find({ register_number: { $in: registered_students } }).select(
+    requirements
+  );
+  if (!students) {
+    return next(new ErrorHandler(500, 'Unable to find Student Details'));
+  }
+  res.status(201).json(students);
+};
 module.exports = {
   login,
   createStudent,
   addNewDrive,
   getDrives,
+  deleteDrive,
   updateStudentPassword,
   updateExecomPassword,
+  getRegisteredStudents,
 };
