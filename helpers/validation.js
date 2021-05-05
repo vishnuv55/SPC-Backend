@@ -400,7 +400,7 @@ const validateAddress = (address, fieldName = 'Address', isRequired = false) => 
  */
 const validateBranch = (branch, fieldName = 'Branch', isRequired = false) => {
   if (branch !== undefined && branch !== null) {
-    const allBranches = ['CS', 'EC', 'EEE'];
+    const allBranches = ['CSE', 'ECE', 'EEE'];
     if (typeof branch !== 'string') {
       throw new ErrorHandler(400, `${fieldName} must be of type string`);
     } else if (!allBranches.includes(branch)) {
