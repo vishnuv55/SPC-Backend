@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
 const { handleError } = require('./helpers/error');
 
 const apiRouter = require('./routes/api');
@@ -15,6 +16,9 @@ app.use(express.json());
 // Cookie-parser
 app.use(cookieParser());
 
+// Logger
+app.use(morgan('combined'));
+
 // Initializing Database Connection
 mongoose
   .connect(process.env.DB_URL, {
@@ -28,7 +32,7 @@ mongoose
 
 app.use('/api', apiRouter);
 app.use((err, req, res, next) => {
-  handleError(err, res);
+  handleError(err, req, res, next);
 });
 
 const PORT = process.env.PORT || 5000;
