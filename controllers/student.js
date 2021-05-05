@@ -196,5 +196,28 @@ const registerDrive = async (req, res, next) => {
   // Sending success response
   res.status(200).json({ message: 'Successfully registered to drive' });
 };
+const getDrives = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  const { tenth_mark, plus_two_mark, gender, number_of_backlogs, btech_cgpa } = req.user;
+  // Checking query parameters.
+  const query = {
+    ...(number_of_backlogs && { 'requirements.number_of_backlogs': { $gte: number_of_backlogs } }),
+    ...(tenth_mark.percentage && {
+      'requirements.tenth_mark.percentage': { $lte: tenth_mark.percentage },
+    }),
+    ...(plus_two_mark.percentage && {
+      'requirements.plus_two_mark.percentage': { $lte: plus_two_mark.percentage },
+    }),
+    ...(btech_cgpa && { 'requirements.btech_min_cgpa': { $lte: btech_cgpa } }),
+    ...(gender && { 'requirements.gender': { $in: gender } }),
+  };
 
-module.exports = { editProfile, login, getStudentDetails, registerDrive };
+  const drives = await Drive.find(query);
+  if (!drives) {
+    return next(new ErrorHandler(500, 'No drives available'));
+  }
+  res.status(200).json(drives);
+};
+module.exports = { editProfile, login, getStudentDetails, registerDrive, getDrives };

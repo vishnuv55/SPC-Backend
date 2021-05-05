@@ -19,7 +19,7 @@ const driveSchema = new Schema({
   location: String,
   url: String,
   requirements: {
-    gender: String,
+    gender: [String],
     tenth_mark: {
       percentage: Number,
       cgpa: Number,
