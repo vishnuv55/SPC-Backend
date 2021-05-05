@@ -225,6 +225,29 @@ const validateGender = (gender, fieldName = 'Gender', isRequired = false) => {
 
 /**
  *
+ * @param {Array} genderList Array of all genders to be validated
+ * @param {String} [fieldName] Field name to be displayed in error message.
+ * @param {Boolean} [isRequired] Is this field required or not
+ */
+const validateGenderArray = (genderList, fieldName = 'Branch', isRequired = false) => {
+  if (genderList !== undefined && genderList !== null) {
+    if (!Array.isArray(genderList)) {
+      throw new ErrorHandler(400, `${fieldName} must be of type array`);
+    }
+    if (genderList.length !== 0) {
+      genderList.forEach((element) => {
+        validateGender(element, 'Gender', true);
+      });
+    } else if (isRequired) {
+      throw new ErrorHandler(400, `${fieldName} cannot be an empty array`);
+    }
+  } else if (isRequired) {
+    throw new ErrorHandler(400, `${fieldName} field cannot be empty`);
+  }
+};
+
+/**
+ *
  * A validator function to validate Password
  * @param {String} password Password to be validated
  * @param {String} [fieldName] Field name to be displayed in error message.
@@ -369,6 +392,48 @@ const validateAddress = (address, fieldName = 'Address', isRequired = false) => 
   }
 };
 
+/**
+ *
+ * @param {Array} branch branch name to be validated
+ * @param {String} [fieldName] Field name to be displayed in error message.
+ * @param {Boolean} [isRequired] Is this field required or not
+ */
+const validateBranch = (branch, fieldName = 'Branch', isRequired = false) => {
+  if (branch !== undefined && branch !== null) {
+    const allBranches = ['CS', 'EC', 'EEE'];
+    if (typeof branch !== 'string') {
+      throw new ErrorHandler(400, `${fieldName} must be of type string`);
+    } else if (!allBranches.includes(branch)) {
+      throw new ErrorHandler(400, `${branch} is not a valid ${fieldName}`);
+    }
+  } else if (isRequired) {
+    throw new ErrorHandler(400, `${fieldName} field cannot be empty`);
+  }
+};
+
+/**
+ *
+ * @param {Array} branchList Array of all branches to be validated
+ * @param {String} [fieldName] Field name to be displayed in error message.
+ * @param {Boolean} [isRequired] Is this field required or not
+ */
+const validateBranchArray = (branchList, fieldName = 'Branch List', isRequired = false) => {
+  if (branchList !== undefined && branchList !== null) {
+    if (!Array.isArray(branchList)) {
+      throw new ErrorHandler(400, `${fieldName} must be of type array`);
+    }
+    if (branchList.length !== 0) {
+      branchList.forEach((element) => {
+        validateBranch(element, 'Branch', true);
+      });
+    } else if (isRequired) {
+      throw new ErrorHandler(400, `${fieldName} cannot be an empty array`);
+    }
+  } else if (isRequired) {
+    throw new ErrorHandler(400, `${fieldName} field cannot be empty`);
+  }
+};
+
 module.exports = {
   validateMarks,
   validateString,
@@ -386,4 +451,7 @@ module.exports = {
   validateProjects,
   validateUrl,
   validateAddress,
+  validateBranch,
+  validateBranchArray,
+  validateGenderArray,
 };
