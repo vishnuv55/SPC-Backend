@@ -17,6 +17,7 @@ const {
   validatePassword,
   validateMongooseId,
   validateBoolean,
+  validateGenderArray,
 } = require('../helpers/validation');
 
 // Login controller
@@ -112,7 +113,7 @@ const addNewDrive = async (req, res, next) => {
   }
 
   // Get data from req.body
-  const { company_name, contact_email, drive_date, location, url, requirements } = req.body;
+  const { company_name, contact_email, drive_date, location, url, salary, requirements } = req.body;
 
   // validate data
   try {
@@ -120,8 +121,9 @@ const addNewDrive = async (req, res, next) => {
     validateEmail(contact_email, 'Contact Email', true);
     validateDate(drive_date, 'Drive Date', true);
     validateString(location, 3, 100, 'Location', true);
+    validateString(salary, 2, 50, 'Salary', true);
     validateUrl(url, 'URL', true);
-    validateString(requirements.gender, 3, 10, 'Preferred gender', true);
+    validateGenderArray(requirements.gender, 'Preferred gender', true);
     validateMarks(requirements.plus_two_mark, '+2 mark', true);
     validateMarks(requirements.tenth_mark, '10th mark', true);
     validateNumber(requirements.btech_min_cgpa, 0, 100, 'Minimum CGPA', true);
@@ -137,6 +139,7 @@ const addNewDrive = async (req, res, next) => {
     contact_email,
     drive_date: new Date(drive_date),
     location,
+    salary,
     url,
     requirements,
   });
