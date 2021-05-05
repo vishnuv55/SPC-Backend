@@ -6,9 +6,9 @@ class ErrorHandler extends Error {
   }
 }
 
-const handleError = (err, res) => {
+const handleError = (err, req, res, next) => {
   const { statusCode, message } = err;
-  console.log(` Error : ${message}`); // eslint-disable-line
+  console.log(`" Error : ${statusCode} << ${message} >> |  ${req.method} : ${req.path} "`); // eslint-disable-line
   res.status(statusCode).json({
     status: 'error',
     statusCode,
