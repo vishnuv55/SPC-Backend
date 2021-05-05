@@ -16,6 +16,7 @@ const driveSchema = new Schema({
     type: Date,
     required: true,
   },
+  salary: String,
   location: String,
   url: String,
   requirements: {

@@ -113,7 +113,7 @@ const addNewDrive = async (req, res, next) => {
   }
 
   // Get data from req.body
-  const { company_name, contact_email, drive_date, location, url, requirements } = req.body;
+  const { company_name, contact_email, drive_date, location, url, salary, requirements } = req.body;
 
   // validate data
   try {
@@ -121,6 +121,7 @@ const addNewDrive = async (req, res, next) => {
     validateEmail(contact_email, 'Contact Email', true);
     validateDate(drive_date, 'Drive Date', true);
     validateString(location, 3, 100, 'Location', true);
+    validateString(salary, 2, 50, 'Salary', true);
     validateUrl(url, 'URL', true);
     validateGenderArray(requirements.gender, 'Preferred gender', true);
     validateMarks(requirements.plus_two_mark, '+2 mark', true);
@@ -138,6 +139,7 @@ const addNewDrive = async (req, res, next) => {
     contact_email,
     drive_date: new Date(drive_date),
     location,
+    salary,
     url,
     requirements,
   });
