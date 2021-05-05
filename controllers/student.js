@@ -20,6 +20,7 @@ const {
   validateUrl,
   validateAddress,
   validateMongooseId,
+  validateBranch,
 } = require('../helpers/validation');
 
 const editProfile = async (req, res, next) => {
@@ -53,7 +54,7 @@ const editProfile = async (req, res, next) => {
   // Validating each data
   try {
     validateName(name);
-    validateString(branch, 2, 100, 'Branch');
+    validateBranch(branch, 'Branch');
     validateDateOfBirth(date_of_birth, 16);
     validateGender(gender);
     validateMarks(tenth_mark, '10th mark');

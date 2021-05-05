@@ -17,6 +17,7 @@ const {
   validatePassword,
   validateMongooseId,
   validateBoolean,
+  validateGenderArray,
 } = require('../helpers/validation');
 
 // Login controller
@@ -121,7 +122,7 @@ const addNewDrive = async (req, res, next) => {
     validateDate(drive_date, 'Drive Date', true);
     validateString(location, 3, 100, 'Location', true);
     validateUrl(url, 'URL', true);
-    validateString(requirements.gender, 3, 10, 'Preferred gender', true);
+    validateGenderArray(requirements.gender, 'Preferred gender', true);
     validateMarks(requirements.plus_two_mark, '+2 mark', true);
     validateMarks(requirements.tenth_mark, '10th mark', true);
     validateNumber(requirements.btech_min_cgpa, 0, 100, 'Minimum CGPA', true);
