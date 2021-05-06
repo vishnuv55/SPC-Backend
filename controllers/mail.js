@@ -50,7 +50,7 @@ const sendMail = async (req, res, next) => {
   };
 
   // Finding student that match the query and getting their emails
-  const [{ mail_ids }] = await Student.aggregate([
+  const [queryResponse] = await Student.aggregate([
     {
       $match: query,
     },
@@ -62,8 +62,13 @@ const sendMail = async (req, res, next) => {
     },
   ]);
 
+  // Sending error if student does not exist
+  if (!queryResponse) {
+    return next(new ErrorHandler(500, 'No eligible student'));
+  }
+
   // Joining the mails to a form a string of all emails
-  const mails = mail_ids.join(', ');
+  const mails = queryResponse.mail_ids.join(', ');
 
   // Sending emails to all students
   const response = await sendNewMail(mails, subject, content);

@@ -1,3 +1,16 @@
+/**
+ * << Controller to handle admin specific functionalities >>
+ *
+ * Login -> 35
+ * createStudent -> 66
+ * addNewDrive -> 121
+ * getDrives -> 169
+ * updateStudentPassword -> 186
+ * updateExecomPassword -> 222
+ * deleteDrive -> 261
+ * getRegisteredStudents -> 279
+ *
+ */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
@@ -20,7 +33,6 @@ const {
   validateGenderArray,
 } = require('../helpers/validation');
 
-// Login controller
 const login = async (req, res, next) => {
   try {
     const { password } = req.body;
@@ -246,6 +258,7 @@ const updateExecomPassword = async (req, res, next) => {
   // Sending success response
   res.status(200).json({ message: 'Password changed successfully' });
 };
+
 const deleteDrive = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
