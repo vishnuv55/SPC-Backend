@@ -1,3 +1,12 @@
+/**
+ * << Controller to handle student specific functionalities >>
+ *
+ * editProfile -> 35
+ * login -> 119
+ * getStudentDetails -> 158
+ * registerDrive -> 168
+ * getDrives -> 210
+ */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Student = require('../models/student');
@@ -197,6 +206,7 @@ const registerDrive = async (req, res, next) => {
   // Sending success response
   res.status(200).json({ message: 'Successfully registered to drive' });
 };
+
 const getDrives = async (req, res, next) => {
   if (req.error) {
     return next(req.error);

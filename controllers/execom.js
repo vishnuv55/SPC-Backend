@@ -1,3 +1,9 @@
+/**
+ * << Controller to handle execom specific functionalities >>
+ *
+ * login -> 18
+ * getDrives -> 59
+ */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Drive = require('../models/drive');
@@ -48,6 +54,7 @@ const login = async (req, res, next) => {
     return next(error);
   }
 };
+
 const getDrives = async (req, res, next) => {
   if (req.error) {
     return next(req.error);

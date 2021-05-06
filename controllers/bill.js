@@ -1,3 +1,10 @@
+/**
+ * << Controller to handle bill management functionalities >>
+ *
+ * postBillDetails -> 18
+ * getBillDetails -> 46
+ * deleteBill -> 61
+ */
 const mongoose = require('mongoose');
 const Bill = require('../models/bill');
 const { ErrorHandler } = require('../helpers/error');
@@ -8,7 +15,6 @@ const {
   validateMongooseId,
 } = require('../helpers/validation');
 
-// Post-gill-details
 const postBillDetails = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
