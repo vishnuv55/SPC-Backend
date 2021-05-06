@@ -116,7 +116,7 @@ const createStudent = async (req, res, next) => {
   } catch (error) {
     return next(new ErrorHandler(500, 'Error saving Student to database'));
   }
-  res.status(200).json({ message: 'Student Created' });
+  res.status(201).json({ message: 'Student Created' });
 };
 
 const addNewDrive = async (req, res, next) => {
@@ -164,7 +164,7 @@ const addNewDrive = async (req, res, next) => {
   }
 
   // Sending success response
-  res.status(200).json({ message: 'Drive saved successfully' });
+  res.status(201).json({ message: 'Drive saved successfully' });
 };
 
 const getDrives = async (req, res, next) => {
@@ -274,7 +274,7 @@ const deleteDrive = async (req, res, next) => {
   if (!drive) {
     return next(new ErrorHandler(500, 'Error deleting Drive'));
   }
-  res.status(201).json({ message: 'Drive deleted successfully' });
+  res.status(200).json({ message: 'Drive deleted successfully' });
 };
 
 const getRegisteredStudents = async (req, res, next) => {
@@ -329,7 +329,7 @@ const getRegisteredStudents = async (req, res, next) => {
   if (!students) {
     return next(new ErrorHandler(500, 'Unable to find Student Details'));
   }
-  res.status(201).json(students);
+  res.status(200).json(students);
 };
 module.exports = {
   login,

@@ -73,7 +73,7 @@ const deleteBill = async (req, res, next) => {
   if (!bill) {
     return next(new ErrorHandler(500, 'Error deleting Bill'));
   }
-  res.status(201).json({ message: 'Bill deleted successfully' });
+  res.status(200).json({ message: 'Bill deleted successfully' });
 };
 
 module.exports = { postBillDetails, getBillDetails, deleteBill };
