@@ -1,7 +1,7 @@
 /**
  * << Controller to handle execom specific functionalities >>
  *
- * login -> 18
+ * login -> 15
  * getDrives -> 59
  */
 const bcrypt = require('bcrypt');
@@ -11,8 +11,6 @@ const Execom = require('../models/execom');
 const { ErrorHandler } = require('../helpers/error');
 const { getFutureDate } = require('../helpers/date');
 const { validateString, validatePassword } = require('../helpers/validation');
-
-// Login
 
 const login = async (req, res, next) => {
   if (req.error) {
