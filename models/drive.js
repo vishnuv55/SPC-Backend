@@ -16,10 +16,11 @@ const driveSchema = new Schema({
     type: Date,
     required: true,
   },
+  salary: String,
   location: String,
   url: String,
   requirements: {
-    gender: String,
+    gender: [String],
     tenth_mark: {
       percentage: Number,
       cgpa: Number,
