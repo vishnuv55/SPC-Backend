@@ -159,10 +159,10 @@ const addNewDrive = async (req, res, next) => {
   // creating new drive data
   const drive = new Drive({
     _id: mongoose.Types.ObjectId(),
-    position,
-    description,
     company_name,
+    position,
     contact_email,
+    description,
     drive_date: new Date(drive_date),
     location,
     salary,
