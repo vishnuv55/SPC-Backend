@@ -125,11 +125,23 @@ const addNewDrive = async (req, res, next) => {
   }
 
   // Get data from req.body
-  const { company_name, contact_email, drive_date, location, url, salary, requirements } = req.body;
+  const {
+    company_name,
+    position,
+    description,
+    contact_email,
+    drive_date,
+    location,
+    url,
+    salary,
+    requirements,
+  } = req.body;
 
   // validate data
   try {
     validateString(company_name, 3, 100, 'Company Name', true);
+    validateString(position, 3, 30, 'Position', true);
+    validateString(description, 3, 128, 'Description', true);
     validateEmail(contact_email, 'Contact Email', true);
     validateDate(drive_date, 'Drive Date', true);
     validateString(location, 3, 100, 'Location', true);
@@ -147,6 +159,8 @@ const addNewDrive = async (req, res, next) => {
   // creating new drive data
   const drive = new Drive({
     _id: mongoose.Types.ObjectId(),
+    position,
+    description,
     company_name,
     contact_email,
     drive_date: new Date(drive_date),
