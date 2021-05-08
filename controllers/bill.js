@@ -20,9 +20,10 @@ const postBillDetails = async (req, res, next) => {
     return next(req.error);
   }
   // Fetching data from request body
-  const { bill_date, bill_amount, bill_description } = req.body;
+  const { bill_title, bill_date, bill_amount, bill_description } = req.body;
 
   try {
+    validateString(bill_title, 3, 30, 'Bill Title', true);
     validateDate(bill_date, 'Bill Date', true);
     validateNumber(bill_amount, 1, 99999999, 'Bill Amount', true);
     validateString(bill_description, 5, 100, 'Bill Description', true);
@@ -31,6 +32,7 @@ const postBillDetails = async (req, res, next) => {
   }
   const bill = new Bill({
     _id: mongoose.Types.ObjectId(),
+    bill_title,
     bill_date: new Date(bill_date),
     bill_amount,
     bill_description,
