@@ -31,6 +31,7 @@ const {
   validateMongooseId,
   validateBoolean,
   validateGenderArray,
+  validateBranch,
 } = require('../helpers/validation');
 
 const login = async (req, res, next) => {
@@ -70,13 +71,14 @@ const createStudent = async (req, res, next) => {
   }
 
   // get data from req
-  const { register_number, name, email } = req.body;
+  const { register_number, name, email, branch } = req.body;
 
   // validate Data
   try {
     validateString(register_number, 5, 20, 'Register Number', true);
     validateName(name, 'Name', true);
     validateEmail(email, 'Email ID', true);
+    validateBranch(branch, 'Branch');
   } catch (error) {
     return next(error);
   }
@@ -107,6 +109,7 @@ const createStudent = async (req, res, next) => {
     register_number,
     name,
     email,
+    branch,
     password: hashedPassword,
   });
 
