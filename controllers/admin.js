@@ -35,11 +35,18 @@ const {
 } = require('../helpers/validation');
 
 const login = async (req, res, next) => {
-  try {
-    const { password } = req.body;
-    // To validate data in request object
-    validateString(password, 6, 50, 'password', true);
+  if (req.error) {
+    return next(req.error);
+  }
 
+  const { password } = req.body;
+  // To validate data in request object
+  try {
+    validateString(password, 6, 50, 'password', true);
+  } catch (error) {
+    return next(error);
+  }
+  try {
     const { ADMIN_PASSWORD, ADMIN_ID } = process.env;
     const isPasswordMatch = await bcrypt.compare(password, ADMIN_PASSWORD);
 
@@ -61,7 +68,7 @@ const login = async (req, res, next) => {
       throw new ErrorHandler(401, 'Password does not match');
     }
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
