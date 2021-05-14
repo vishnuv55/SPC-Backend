@@ -31,14 +31,22 @@ const {
   validateMongooseId,
   validateBoolean,
   validateGenderArray,
+  validateBranch,
 } = require('../helpers/validation');
 
 const login = async (req, res, next) => {
-  try {
-    const { password } = req.body;
-    // To validate data in request object
-    validateString(password, 6, 50, 'password', true);
+  if (req.error) {
+    return next(req.error);
+  }
 
+  const { password } = req.body;
+  // To validate data in request object
+  try {
+    validateString(password, 6, 50, 'password', true);
+  } catch (error) {
+    return next(error);
+  }
+  try {
     const { ADMIN_PASSWORD, ADMIN_ID } = process.env;
     const isPasswordMatch = await bcrypt.compare(password, ADMIN_PASSWORD);
 
@@ -60,7 +68,7 @@ const login = async (req, res, next) => {
       throw new ErrorHandler(401, 'Password does not match');
     }
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
@@ -70,13 +78,14 @@ const createStudent = async (req, res, next) => {
   }
 
   // get data from req
-  const { register_number, name, email } = req.body;
+  const { register_number, name, email, branch } = req.body;
 
   // validate Data
   try {
     validateString(register_number, 5, 20, 'Register Number', true);
     validateName(name, 'Name', true);
     validateEmail(email, 'Email ID', true);
+    validateBranch(branch, 'Branch');
   } catch (error) {
     return next(error);
   }
@@ -107,6 +116,7 @@ const createStudent = async (req, res, next) => {
     register_number,
     name,
     email,
+    branch,
     password: hashedPassword,
   });
 
@@ -116,7 +126,7 @@ const createStudent = async (req, res, next) => {
   } catch (error) {
     return next(new ErrorHandler(500, 'Error saving Student to database'));
   }
-  res.status(200).json({ message: 'Student Created' });
+  res.status(201).json({ message: 'Student Created' });
 };
 
 const addNewDrive = async (req, res, next) => {
@@ -125,11 +135,23 @@ const addNewDrive = async (req, res, next) => {
   }
 
   // Get data from req.body
-  const { company_name, contact_email, drive_date, location, url, salary, requirements } = req.body;
+  const {
+    company_name,
+    position,
+    description,
+    contact_email,
+    drive_date,
+    location,
+    url,
+    salary,
+    requirements,
+  } = req.body;
 
   // validate data
   try {
     validateString(company_name, 3, 100, 'Company Name', true);
+    validateString(position, 3, 30, 'Position', true);
+    validateString(description, 3, 128, 'Description', true);
     validateEmail(contact_email, 'Contact Email', true);
     validateDate(drive_date, 'Drive Date', true);
     validateString(location, 3, 100, 'Location', true);
@@ -148,7 +170,9 @@ const addNewDrive = async (req, res, next) => {
   const drive = new Drive({
     _id: mongoose.Types.ObjectId(),
     company_name,
+    position,
     contact_email,
+    description,
     drive_date: new Date(drive_date),
     location,
     salary,
@@ -164,7 +188,7 @@ const addNewDrive = async (req, res, next) => {
   }
 
   // Sending success response
-  res.status(200).json({ message: 'Drive saved successfully' });
+  res.status(201).json({ message: 'Drive saved successfully' });
 };
 
 const getDrives = async (req, res, next) => {
@@ -274,7 +298,7 @@ const deleteDrive = async (req, res, next) => {
   if (!drive) {
     return next(new ErrorHandler(500, 'Error deleting Drive'));
   }
-  res.status(201).json({ message: 'Drive deleted successfully' });
+  res.status(200).json({ message: 'Drive deleted successfully' });
 };
 
 const getRegisteredStudents = async (req, res, next) => {
@@ -329,7 +353,7 @@ const getRegisteredStudents = async (req, res, next) => {
   if (!students) {
     return next(new ErrorHandler(500, 'Unable to find Student Details'));
   }
-  res.status(201).json(students);
+  res.status(200).json(students);
 };
 module.exports = {
   login,

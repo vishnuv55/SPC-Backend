@@ -29,7 +29,6 @@ const {
   validateUrl,
   validateAddress,
   validateMongooseId,
-  validateBranch,
 } = require('../helpers/validation');
 
 const editProfile = async (req, res, next) => {
@@ -40,7 +39,6 @@ const editProfile = async (req, res, next) => {
   // Getting data from req body
   const {
     name,
-    branch,
     date_of_birth,
     gender,
     tenth_mark,
@@ -63,7 +61,6 @@ const editProfile = async (req, res, next) => {
   // Validating each data
   try {
     validateName(name);
-    validateBranch(branch, 'Branch');
     validateDateOfBirth(date_of_birth, 16);
     validateGender(gender);
     validateMarks(tenth_mark, '10th mark');
@@ -87,7 +84,6 @@ const editProfile = async (req, res, next) => {
 
   // Updating data to req.user
   if (name !== undefined) req.user.name = name;
-  if (branch !== undefined) req.user.branch = branch;
   if (date_of_birth !== undefined) req.user.date_of_birth = date_of_birth;
   if (gender !== undefined) req.user.gender = gender;
   if (tenth_mark !== undefined) req.user.tenth_mark = tenth_mark;

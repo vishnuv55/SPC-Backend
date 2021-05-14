@@ -4,6 +4,10 @@ const { Schema } = mongoose;
 
 const billSchema = new Schema({
   _id: Schema.Types.ObjectId,
+  bill_title: {
+    type: String,
+    required: true,
+  },
   bill_date: {
     type: Date,
     required: true,
