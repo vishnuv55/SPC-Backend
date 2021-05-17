@@ -33,7 +33,7 @@ const postBillDetails = async (req, res, next) => {
   const bill = new Bill({
     _id: mongoose.Types.ObjectId(),
     bill_title,
-    bill_date: new Date(bill_date),
+    bill_date,
     bill_amount,
     bill_description,
   });
