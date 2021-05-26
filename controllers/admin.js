@@ -333,9 +333,11 @@ const getRegisteredStudents = async (req, res, next) => {
     return next(error);
   }
   const requirements = [
+    'name',
+    'register_number',
     branch && 'branch',
     gender && 'gender',
-    dob && 'dob',
+    dob && 'date_of_birth',
     tenth_mark && 'tenth_mark',
     plus_two_mark && 'plus_two_mark',
     btech_cgpa && 'btech_cgpa',
