@@ -37,21 +37,8 @@ const studentSchema = new Schema({
     state: String,
     zip: Number,
   },
-  linkedin: String,
-  twitter: String,
-  github: String,
   guardian_name: String,
   guardian_contact_number: String,
-  placement_status: Boolean,
-  placed_company: String,
-  projects: [
-    {
-      project_name: String,
-      project_description: String,
-      url: String,
-    },
-  ],
-  programming_languages: [String],
 });
 
 module.exports = mongoose.model('Student', studentSchema);
