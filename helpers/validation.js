@@ -434,6 +434,11 @@ const validateBranchArray = (branchList, fieldName = 'Branch List', isRequired =
   }
 };
 
+const validatePassOutYear = (year) => {
+  const currentYear = new Date().getFullYear();
+  validateNumber(year, currentYear, currentYear + 4, 'PassOut Year', true);
+};
+
 module.exports = {
   validateMarks,
   validateString,
@@ -454,4 +459,5 @@ module.exports = {
   validateBranch,
   validateBranchArray,
   validateGenderArray,
+  validatePassOutYear,
 };

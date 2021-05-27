@@ -32,6 +32,7 @@ const {
   validateBoolean,
   validateGenderArray,
   validateBranch,
+  validatePassOutYear,
 } = require('../helpers/validation');
 
 const login = async (req, res, next) => {
@@ -78,7 +79,7 @@ const createStudent = async (req, res, next) => {
   }
 
   // get data from req
-  const { register_number, name, email, branch } = req.body;
+  const { register_number, name, email, branch, pass_out_year } = req.body;
 
   // validate Data
   try {
@@ -86,6 +87,7 @@ const createStudent = async (req, res, next) => {
     validateName(name, 'Name', true);
     validateEmail(email, 'Email ID', true);
     validateBranch(branch, 'Branch');
+    validatePassOutYear(pass_out_year);
   } catch (error) {
     return next(error);
   }
@@ -117,6 +119,7 @@ const createStudent = async (req, res, next) => {
     name,
     email,
     branch,
+    pass_out_year,
     password: hashedPassword,
   });
 
