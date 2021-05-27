@@ -39,6 +39,10 @@ const studentSchema = new Schema({
   },
   guardian_name: String,
   guardian_contact_number: String,
+  pass_out_year: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model('Student', studentSchema);
