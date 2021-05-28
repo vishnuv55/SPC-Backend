@@ -33,6 +33,7 @@ const {
   validateGenderArray,
   validateBranch,
   validatePassOutYear,
+  validateArray,
 } = require('../helpers/validation');
 
 const login = async (req, res, next) => {
@@ -129,6 +130,70 @@ const createStudent = async (req, res, next) => {
   } catch (error) {
     return next(new ErrorHandler(500, 'Error saving Student to database'));
   }
+  res.status(201).json({ message: 'Student Created' });
+};
+
+const createStudents = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+
+  const { studentsArray } = req.body;
+
+  try {
+    validateArray(studentsArray, 1, 2000, 'Student Data', false);
+  } catch (error) {
+    return next(error);
+  }
+
+  let studentEmails = [];
+  let studentRegisterNumbers = [];
+  try {
+    studentEmails = await Student.find({}).distinct('email');
+    studentRegisterNumbers = await Student.find({}).distinct('register_number');
+  } catch (error) {
+    return next(new ErrorHandler(500, 'Error Finding data in database'));
+  }
+
+  studentsArray.foreach((student) => {
+    const { register_number, name, email, branch, pass_out_year } = student;
+    try {
+      validateString(register_number, 5, 20, 'Register Number', true);
+      validateName(name, 'Name', true);
+      validateEmail(email, 'Email ID', true);
+      validateBranch(branch, 'Branch');
+      validatePassOutYear(pass_out_year);
+    } catch (error) {
+      return next(error);
+    }
+
+    if (studentEmails.includes(email)) {
+      return next(
+        new ErrorHandler(
+          409,
+          `Student with email : ${email} already exists in Database OR file has duplicate emails`
+        )
+      );
+    }
+    studentEmails.push(email);
+
+    if (studentRegisterNumbers.includes(register_number)) {
+      return next(
+        new ErrorHandler(
+          409,
+          `Student with Register Number : ${register_number} already exists OR file has duplicate Register Numbers `
+        )
+      );
+    }
+    studentRegisterNumbers.push(register_number);
+  });
+
+  try {
+    await Student.insertMany(studentsArray);
+  } catch (error) {
+    return next(new ErrorHandler(500, 'Error saving Student to database'));
+  }
+
   res.status(201).json({ message: 'Student Created' });
 };
 
@@ -363,6 +428,7 @@ const getRegisteredStudents = async (req, res, next) => {
 module.exports = {
   login,
   createStudent,
+  createStudents,
   addNewDrive,
   getDrives,
   deleteDrive,

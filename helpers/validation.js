@@ -434,9 +434,41 @@ const validateBranchArray = (branchList, fieldName = 'Branch List', isRequired =
   }
 };
 
+/**
+ *
+ * @param {Number} year Year to be validated
+ */
 const validatePassOutYear = (year) => {
   const currentYear = new Date().getFullYear();
   validateNumber(year, currentYear, currentYear + 4, 'PassOut Year', true);
+};
+
+/**
+ *
+ * @param {Array} array
+ * @param {Number} minLength Minimum length of array
+ * @param {Number} maxLength Maximum length of array
+ * @param {String} fieldName Name to be shown in error
+ * @param {Boolean} canBeEmpty Whether the array can be empty or not
+ */
+const validateArray = (array, minLength, maxLength, fieldName, canBeEmpty = true) => {
+  if (array !== undefined && array !== null) {
+    if (!Array.isArray(array)) {
+      throw new ErrorHandler(400, `${fieldName} must be of type array`);
+    }
+    if (array.length !== 0) {
+      if (array.length < minLength) {
+        throw new ErrorHandler(400, `${fieldName} must contain at least ${minLength} values`);
+      }
+      if (array.length > maxLength) {
+        throw new ErrorHandler(400, `${fieldName} must not contain more than ${maxLength} values`);
+      }
+    } else if (!canBeEmpty) {
+      throw new ErrorHandler(400, `${fieldName} cannot be an empty array`);
+    }
+  } else {
+    throw new ErrorHandler(400, `${fieldName} field cannot be empty`);
+  }
 };
 
 module.exports = {
@@ -460,4 +492,5 @@ module.exports = {
   validateBranchArray,
   validateGenderArray,
   validatePassOutYear,
+  validateArray,
 };
