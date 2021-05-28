@@ -12,7 +12,25 @@ const alumniSchema = new Schema({
     type: String,
     required: true,
   },
-  password: {
+  address: {
+    line_one: {
+      type: String,
+      required: true,
+    },
+    line_two: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: String,
+      required: true,
+    },
+    zip: {
+      type: Number,
+      required: true,
+    },
+  },
+  phone_number: {
     type: String,
     required: true,
   },
