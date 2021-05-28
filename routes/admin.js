@@ -12,6 +12,8 @@ const {
   updateStudentPassword,
   updateExecomPassword,
   getRegisteredStudents,
+  createAlumni,
+  getAlumniDetails,
 } = require('../controllers/admin');
 const { logout } = require('../controllers/user');
 const { sendMail } = require('../controllers/mail');
@@ -25,8 +27,8 @@ router.delete('/drive/:id', authenticateAdmin, deleteDrive);
 router.get('/bill-details', authenticateAdmin, getBillDetails);
 router.post('/bill-details', authenticateAdmin, postBillDetails);
 router.post('/send-email', authenticateAdmin, sendMail);
-router.get('/alumni-details', () => {});
-router.post('/alumni-details', () => {});
+router.get('/alumni-details', authenticateAdmin, getAlumniDetails);
+router.post('/alumni-details', authenticateAdmin, createAlumni);
 router.post('/update-student-password', authenticateAdmin, updateStudentPassword);
 router.post('/update-execom-password', authenticateAdmin, updateExecomPassword);
 router.delete('/bill/:id', authenticateAdmin, deleteBill);
