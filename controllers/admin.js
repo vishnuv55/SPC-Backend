@@ -17,6 +17,7 @@ const mongoose = require('mongoose');
 const Student = require('../models/student');
 const Drive = require('../models/drive');
 const Execom = require('../models/execom');
+const Alumni = require('../models/alumni');
 const { getFutureDate } = require('../helpers/date');
 const { ErrorHandler } = require('../helpers/error');
 const {
@@ -425,6 +426,39 @@ const getRegisteredStudents = async (req, res, next) => {
   }
   res.status(200).json(students);
 };
+
+const createAlumni = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  const { pass_out_year } = req.body;
+  try {
+    validatePassOutYear(pass_out_year);
+  } catch (error) {
+    return next(error);
+  }
+
+  const student = await Student.find({ pass_out_year }).select('name email address phone_number');
+  if (!student) {
+    return next(new ErrorHandler(500, 'Unable to find Student Details'));
+  }
+  try {
+    await Alumni.insertMany(student);
+  } catch (error) {
+    return next(new ErrorHandler(500, 'Unable to Create Alumni'));
+  }
+  res.status(200).json({ message: 'Alumni details created successfully' });
+};
+const getAlumniDetails = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  const alumni = await Alumni.find({});
+  if (!alumni) {
+    return next(new ErrorHandler(500, 'Unable to find Alumni Details'));
+  }
+  res.status(200).json(alumni);
+};
 module.exports = {
   login,
   createStudent,
@@ -435,4 +469,6 @@ module.exports = {
   updateStudentPassword,
   updateExecomPassword,
   getRegisteredStudents,
+  createAlumni,
+  getAlumniDetails,
 };
