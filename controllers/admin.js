@@ -139,7 +139,7 @@ const createStudents = async (req, res, next) => {
     return next(req.error);
   }
 
-  const { studentsArray } = req.body;
+  const studentsArray = req.body;
 
   try {
     validateArray(studentsArray, 1, 2000, 'Student Data', false);
@@ -156,41 +156,61 @@ const createStudents = async (req, res, next) => {
     return next(new ErrorHandler(500, 'Error Finding data in database'));
   }
 
-  studentsArray.foreach((student) => {
-    const { register_number, name, email, branch, pass_out_year } = student;
-    try {
-      validateString(register_number, 5, 20, 'Register Number', true);
-      validateName(name, 'Name', true);
-      validateEmail(email, 'Email ID', true);
-      validateBranch(branch, 'Branch');
-      validatePassOutYear(pass_out_year);
-    } catch (error) {
-      return next(error);
-    }
+  const updatedArray = await Promise.all(
+    studentsArray.map(async (student) => {
+      const [register_number, name, email, branch, pass_out_year] = student;
 
-    if (studentEmails.includes(email)) {
-      return next(
-        new ErrorHandler(
-          409,
-          `Student with email : ${email} already exists in Database OR file has duplicate emails`
-        )
-      );
-    }
-    studentEmails.push(email);
+      try {
+        validateString(register_number, 5, 20, 'Register Number', true);
+        validateName(name, 'Name', true);
+        validateEmail(email, 'Email ID', true);
+        validateBranch(branch, 'Branch');
+        validatePassOutYear(pass_out_year);
+      } catch (error) {
+        return next(error);
+      }
 
-    if (studentRegisterNumbers.includes(register_number)) {
-      return next(
-        new ErrorHandler(
-          409,
-          `Student with Register Number : ${register_number} already exists OR file has duplicate Register Numbers `
-        )
-      );
-    }
-    studentRegisterNumbers.push(register_number);
-  });
+      if (studentEmails.includes(email)) {
+        return next(
+          new ErrorHandler(
+            409,
+            `Student with email : ${email} already exists in Database OR file has duplicate emails`
+          )
+        );
+      }
+      studentEmails.push(email);
+
+      if (studentRegisterNumbers.includes(register_number)) {
+        return next(
+          new ErrorHandler(
+            409,
+            `Student with Register Number : ${register_number} already exists OR file has duplicate Register Numbers `
+          )
+        );
+      }
+      studentRegisterNumbers.push(register_number);
+
+      // Hashing register number for password
+      let hashedPassword;
+      try {
+        hashedPassword = await bcrypt.hash(register_number, 8);
+      } catch (error) {
+        return next(new ErrorHandler(500, 'Error hashing password'));
+      }
+      return {
+        _id: mongoose.Types.ObjectId(),
+        register_number,
+        name,
+        email,
+        branch,
+        pass_out_year,
+        password: hashedPassword,
+      };
+    })
+  );
 
   try {
-    await Student.insertMany(studentsArray);
+    await Student.insertMany(updatedArray);
   } catch (error) {
     return next(new ErrorHandler(500, 'Error saving Student to database'));
   }
