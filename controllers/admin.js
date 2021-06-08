@@ -156,58 +156,58 @@ const createStudents = async (req, res, next) => {
     return next(new ErrorHandler(500, 'Error Finding data in database'));
   }
 
-  const updatedArray = await Promise.all(
-    studentsArray.map(async (student) => {
-      const [register_number, name, email, branch, pass_out_year] = student;
+  let updatedArray = [];
+  try {
+    updatedArray = await Promise.all(
+      studentsArray.map(async (student) => {
+        const [register_number, name, email, branch, pass_out_year] = student;
 
-      try {
+        // eslint-disable-next-line radix
+        const pass_out_year_number = parseInt(pass_out_year);
+
         validateString(register_number, 5, 20, 'Register Number', true);
         validateName(name, 'Name', true);
         validateEmail(email, 'Email ID', true);
         validateBranch(branch, 'Branch');
-        validatePassOutYear(pass_out_year);
-      } catch (error) {
-        return next(error);
-      }
+        validatePassOutYear(pass_out_year_number);
 
-      if (studentEmails.includes(email)) {
-        return next(
-          new ErrorHandler(
+        if (studentEmails.includes(email)) {
+          throw new ErrorHandler(
             409,
             `Student with email : ${email} already exists in Database OR file has duplicate emails`
-          )
-        );
-      }
-      studentEmails.push(email);
+          );
+        }
+        studentEmails.push(email);
 
-      if (studentRegisterNumbers.includes(register_number)) {
-        return next(
-          new ErrorHandler(
+        if (studentRegisterNumbers.includes(register_number)) {
+          throw new ErrorHandler(
             409,
             `Student with Register Number : ${register_number} already exists OR file has duplicate Register Numbers `
-          )
-        );
-      }
-      studentRegisterNumbers.push(register_number);
+          );
+        }
+        studentRegisterNumbers.push(register_number);
 
-      // Hashing register number for password
-      let hashedPassword;
-      try {
-        hashedPassword = await bcrypt.hash(register_number, 8);
-      } catch (error) {
-        return next(new ErrorHandler(500, 'Error hashing password'));
-      }
-      return {
-        _id: mongoose.Types.ObjectId(),
-        register_number,
-        name,
-        email,
-        branch,
-        pass_out_year,
-        password: hashedPassword,
-      };
-    })
-  );
+        // Hashing register number for password
+        let hashedPassword;
+        try {
+          hashedPassword = await bcrypt.hash(register_number, 8);
+        } catch (error) {
+          throw new ErrorHandler(500, 'Error hashing password');
+        }
+        return {
+          _id: mongoose.Types.ObjectId(),
+          register_number,
+          name,
+          email,
+          branch,
+          pass_out_year: pass_out_year_number,
+          password: hashedPassword,
+        };
+      })
+    );
+  } catch (error) {
+    return next(error);
+  }
 
   try {
     await Student.insertMany(updatedArray);
@@ -215,7 +215,7 @@ const createStudents = async (req, res, next) => {
     return next(new ErrorHandler(500, 'Error saving Student to database'));
   }
 
-  res.status(201).json({ message: 'Student Created' });
+  res.status(201).json({ message: 'Students Created' });
 };
 
 const addNewDrive = async (req, res, next) => {
