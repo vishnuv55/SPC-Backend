@@ -11,7 +11,11 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: 'https://cec-spc.netlify.app',
+  })
+);
 
 // Json parser
 app.use(express.json());
