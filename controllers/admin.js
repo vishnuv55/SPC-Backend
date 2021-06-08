@@ -473,7 +473,24 @@ const getAlumniDetails = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
-  const alumni = await Alumni.find({});
+  const alumni = await Alumni.aggregate([
+    {
+      $addFields: {
+        address: {
+          $concat: ['$address.line_one', ', ', '$address.line_two', ', ', '$address.state'],
+        },
+        Pin: {
+          $add: ['$address.zip'],
+        },
+      },
+    },
+    {
+      $project: {
+        __v: 0,
+        _id: 0,
+      },
+    },
+  ]);
   if (!alumni) {
     return next(new ErrorHandler(500, 'Unable to find Alumni Details'));
   }
