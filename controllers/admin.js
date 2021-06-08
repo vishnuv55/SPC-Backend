@@ -34,6 +34,7 @@ const {
   validateGenderArray,
   validateBranch,
   validatePassOutYear,
+  validateArray,
 } = require('../helpers/validation');
 
 const login = async (req, res, next) => {
@@ -130,6 +131,90 @@ const createStudent = async (req, res, next) => {
   } catch (error) {
     return next(new ErrorHandler(500, 'Error saving Student to database'));
   }
+  res.status(201).json({ message: 'Student Created' });
+};
+
+const createStudents = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+
+  const studentsArray = req.body;
+
+  try {
+    validateArray(studentsArray, 1, 2000, 'Student Data', false);
+  } catch (error) {
+    return next(error);
+  }
+
+  let studentEmails = [];
+  let studentRegisterNumbers = [];
+  try {
+    studentEmails = await Student.find({}).distinct('email');
+    studentRegisterNumbers = await Student.find({}).distinct('register_number');
+  } catch (error) {
+    return next(new ErrorHandler(500, 'Error Finding data in database'));
+  }
+
+  const updatedArray = await Promise.all(
+    studentsArray.map(async (student) => {
+      const [register_number, name, email, branch, pass_out_year] = student;
+
+      try {
+        validateString(register_number, 5, 20, 'Register Number', true);
+        validateName(name, 'Name', true);
+        validateEmail(email, 'Email ID', true);
+        validateBranch(branch, 'Branch');
+        validatePassOutYear(pass_out_year);
+      } catch (error) {
+        return next(error);
+      }
+
+      if (studentEmails.includes(email)) {
+        return next(
+          new ErrorHandler(
+            409,
+            `Student with email : ${email} already exists in Database OR file has duplicate emails`
+          )
+        );
+      }
+      studentEmails.push(email);
+
+      if (studentRegisterNumbers.includes(register_number)) {
+        return next(
+          new ErrorHandler(
+            409,
+            `Student with Register Number : ${register_number} already exists OR file has duplicate Register Numbers `
+          )
+        );
+      }
+      studentRegisterNumbers.push(register_number);
+
+      // Hashing register number for password
+      let hashedPassword;
+      try {
+        hashedPassword = await bcrypt.hash(register_number, 8);
+      } catch (error) {
+        return next(new ErrorHandler(500, 'Error hashing password'));
+      }
+      return {
+        _id: mongoose.Types.ObjectId(),
+        register_number,
+        name,
+        email,
+        branch,
+        pass_out_year,
+        password: hashedPassword,
+      };
+    })
+  );
+
+  try {
+    await Student.insertMany(updatedArray);
+  } catch (error) {
+    return next(new ErrorHandler(500, 'Error saving Student to database'));
+  }
+
   res.status(201).json({ message: 'Student Created' });
 };
 
@@ -388,7 +473,24 @@ const getAlumniDetails = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
-  const alumni = await Alumni.find({});
+  const alumni = await Alumni.aggregate([
+    {
+      $addFields: {
+        address: {
+          $concat: ['$address.line_one', ', ', '$address.line_two', ', ', '$address.state'],
+        },
+        Pin: {
+          $add: ['$address.zip'],
+        },
+      },
+    },
+    {
+      $project: {
+        __v: 0,
+        _id: 0,
+      },
+    },
+  ]);
   if (!alumni) {
     return next(new ErrorHandler(500, 'Unable to find Alumni Details'));
   }
@@ -397,6 +499,7 @@ const getAlumniDetails = async (req, res, next) => {
 module.exports = {
   login,
   createStudent,
+  createStudents,
   addNewDrive,
   getDrives,
   deleteDrive,

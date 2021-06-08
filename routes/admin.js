@@ -12,6 +12,7 @@ const {
   updateStudentPassword,
   updateExecomPassword,
   getRegisteredStudents,
+  createStudents,
   createAlumni,
   getAlumniDetails,
 } = require('../controllers/admin');
@@ -20,6 +21,7 @@ const { sendMail } = require('../controllers/mail');
 
 router.post('/login', login);
 router.post('/student-details', authenticateAdmin, getRegisteredStudents);
+router.post('/create-students', authenticateAdmin, createStudents);
 router.post('/create-student', authenticateAdmin, createStudent);
 router.get('/drive-details', authenticateAdmin, getDrives);
 router.post('/drive-details', authenticateAdmin, addNewDrive);
