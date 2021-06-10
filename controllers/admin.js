@@ -59,11 +59,15 @@ const login = async (req, res, next) => {
       // For signing JWT token
       const token = jwt.sign({ userType: 'admin', userId: ADMIN_ID }, JWT_SECRET);
 
+      const isProduction = process.env.NODE_ENV === 'production';
+
       // For setting httpOnly cookie
       const cookieExpiryDate = getFutureDate(30);
       res.cookie('jwt', token, {
         httpOnly: true,
+        secure: true,
         expires: cookieExpiryDate,
+        sameSite: isProduction ? 'none' : 'Lax',
       });
 
       res.status(200).json({ message: 'Successfully Logged In' });

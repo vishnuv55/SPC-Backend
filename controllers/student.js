@@ -137,13 +137,19 @@ const login = async (req, res, next) => {
       throw new ErrorHandler(401, 'Password does not match');
     }
     const cookieExpiryDate = getFutureDate(60);
+
     const { JWT_SECRET } = process.env;
+
+    const isProduction = process.env.NODE_ENV === 'production';
+
     // For signing JWT token
     const token = jwt.sign({ userType: 'student', userId: currentUser._id }, JWT_SECRET); // eslint-disable-line
     // For setting httpOnly cookie
     res.cookie('jwt', token, {
       httpOnly: true,
+      secure: true,
       expires: cookieExpiryDate,
+      sameSite: isProduction ? 'none' : 'Lax',
     });
     res.status(200).json({ message: 'Successfully Logged In' });
   } catch (error) {
