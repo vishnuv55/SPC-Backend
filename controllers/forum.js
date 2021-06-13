@@ -38,7 +38,7 @@ const getQueries = async (req, res, next) => {
   }
   let queries;
   try {
-    queries = await Query.find({});
+    queries = await Query.find({}).sort({ created_date: -1 });
   } catch (error) {
     return next(new ErrorHandler(500, 'Error Finding Queries'));
   }
