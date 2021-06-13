@@ -1,4 +1,5 @@
 const express = require('express');
+const { postQuery, getQueries, editQuestion } = require('../controllers/forum');
 const {
   editProfile,
   login,
@@ -18,5 +19,8 @@ router.get('/drive-details', authenticateStudent, getDrives);
 router.post('/register-drive', authenticateStudent, registerDrive);
 router.post('/change-password', authenticateStudent, changePassword);
 router.post('/logout', authenticateStudent, logout);
+router.post('/forum/question', authenticateStudent, postQuery);
+router.get('/forum/queries', authenticateStudent, getQueries);
+router.patch('/forum/question', authenticateStudent, editQuestion);
 
 module.exports = router;

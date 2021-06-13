@@ -4,6 +4,7 @@ const { login, getDrives } = require('../controllers/execom');
 const { changePassword, logout } = require('../controllers/user');
 const { postBillDetails, getBillDetails, deleteBill } = require('../controllers/bill');
 const { sendMail } = require('../controllers/mail');
+const { getQueries, postAnswer } = require('../controllers/forum');
 
 const router = express.Router();
 
@@ -16,5 +17,7 @@ router.post('send-email', authenticateExecom, sendMail);
 router.post('/change-password', authenticateExecom, changePassword);
 router.delete('/bill/:id', authenticateExecom, deleteBill);
 router.post('/logout', authenticateExecom, logout);
+router.get('/forum/queries', authenticateExecom, getQueries);
+router.post('/forum/answer', authenticateExecom, postAnswer);
 
 module.exports = router;
