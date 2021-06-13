@@ -14,7 +14,6 @@ const app = express();
 app.use(
   cors({
     origin: 'https://cec-spc.netlify.app',
-    credentials: true,
   })
 );
 
