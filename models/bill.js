@@ -8,6 +8,10 @@ const billSchema = new Schema({
     type: String,
     required: true,
   },
+  created_date: {
+    type: Date,
+    required: true,
+  },
   bill_date: {
     type: Date,
     required: true,

@@ -46,6 +46,8 @@ const login = async (req, res, next) => {
     res.cookie('jwt', token, {
       httpOnly: true,
       expires: cookieExpiryDate,
+      secure: true,
+      sameSite: 'None',
     });
     res.status(200).json({ message: 'Successfully Logged In' });
   } catch (error) {
@@ -61,7 +63,7 @@ const getDrives = async (req, res, next) => {
   // Getting all drives from database
   let drives;
   try {
-    drives = await Drive.find({});
+    drives = await Drive.find({}).sort({ created_date: -1 });
   } catch (error) {
     return next(new ErrorHandler(500, 'Error Finding Drives'));
   }
