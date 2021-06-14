@@ -49,7 +49,10 @@ const logout = async (req, res, next) => {
   }
 
   // Clearing cookie
-  res.clearCookie('jwt');
+  res.clearCookie('jwt', {
+    secure: true,
+    sameSite: 'none',
+  });
 
   // Sending success message
   res.status(200).json({ message: 'Successfully logged out' });

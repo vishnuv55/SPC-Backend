@@ -47,7 +47,7 @@ const login = async (req, res, next) => {
       httpOnly: true,
       expires: cookieExpiryDate,
       secure: true,
-      sameSite: 'None',
+      sameSite: 'none',
     });
     res.status(200).json({ message: 'Successfully Logged In' });
   } catch (error) {
