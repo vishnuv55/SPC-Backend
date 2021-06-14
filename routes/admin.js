@@ -18,7 +18,7 @@ const {
 } = require('../controllers/admin');
 const { logout } = require('../controllers/user');
 const { sendMail } = require('../controllers/mail');
-const { getQueries, postAnswer } = require('../controllers/forum');
+const { getQueries, postAnswer, deleteQuery } = require('../controllers/forum');
 
 router.post('/login', login);
 router.post('/student-details', authenticateAdmin, getRegisteredStudents);
@@ -38,5 +38,6 @@ router.delete('/bill/:id', authenticateAdmin, deleteBill);
 router.post('/logout', authenticateAdmin, logout);
 router.get('/forum/queries', authenticateAdmin, getQueries);
 router.post('/forum/answer', authenticateAdmin, postAnswer);
+router.delete('/forum/queries/:id', authenticateAdmin, deleteQuery);
 
 module.exports = router;

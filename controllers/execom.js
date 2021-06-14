@@ -61,7 +61,7 @@ const getDrives = async (req, res, next) => {
   // Getting all drives from database
   let drives;
   try {
-    drives = await Drive.find({});
+    drives = await Drive.find({}).sort({ created_date: -1 });
   } catch (error) {
     return next(new ErrorHandler(500, 'Error Finding Drives'));
   }

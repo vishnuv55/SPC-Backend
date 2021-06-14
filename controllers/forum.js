@@ -109,5 +109,22 @@ const editQuestion = async (req, res, next) => {
   }
   res.status(200).json({ message: 'Question Updated Successfully' });
 };
+const deleteQuery = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  const { id: queryId } = req.params;
+  try {
+    validateMongooseId(queryId, 'Id', true);
+  } catch (error) {
+    return next(error);
+  }
 
-module.exports = { postQuery, getQueries, postAnswer, editQuestion };
+  const bill = await Query.findOneAndDelete({ _id: queryId });
+  if (!bill) {
+    return next(new ErrorHandler(500, 'Error deleting Query'));
+  }
+  res.status(200).json({ message: 'Query deleted successfully' });
+};
+
+module.exports = { postQuery, getQueries, postAnswer, editQuestion, deleteQuery };

@@ -32,6 +32,7 @@ const postBillDetails = async (req, res, next) => {
   }
   const bill = new Bill({
     _id: mongoose.Types.ObjectId(),
+    created_date: new Date().toISOString(),
     bill_title,
     bill_date,
     bill_amount,
@@ -53,7 +54,7 @@ const getBillDetails = async (req, res, next) => {
 
   let bills;
   try {
-    bills = await Bill.find({});
+    bills = await Bill.find({}).sort({ created_date: -1 });
   } catch (error) {
     return next(new ErrorHandler(500, 'Error Finding Bills'));
   }

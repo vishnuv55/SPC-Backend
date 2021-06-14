@@ -4,6 +4,10 @@ const { Schema } = mongoose;
 
 const driveSchema = new Schema({
   _id: Schema.Types.ObjectId,
+  created_date: {
+    type: Date,
+    required: true,
+  },
   company_name: {
     type: String,
     required: true,
