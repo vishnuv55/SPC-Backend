@@ -144,6 +144,8 @@ const login = async (req, res, next) => {
     res.cookie('jwt', token, {
       httpOnly: true,
       expires: cookieExpiryDate,
+      secure: true,
+      sameSite: 'None',
     });
     res.status(200).json({ message: 'Successfully Logged In' });
   } catch (error) {
@@ -221,7 +223,7 @@ const getDrives = async (req, res, next) => {
     ...(gender && { 'requirements.gender': { $in: gender } }),
   };
 
-  const drives = await Drive.find(query);
+  const drives = await Drive.find(query).sort({ created_date: -1 });
   if (!drives) {
     return next(new ErrorHandler(500, 'No drives available'));
   }

@@ -4,7 +4,7 @@ const { login, getDrives } = require('../controllers/execom');
 const { changePassword, logout } = require('../controllers/user');
 const { postBillDetails, getBillDetails, deleteBill } = require('../controllers/bill');
 const { sendMail } = require('../controllers/mail');
-const { getQueries, postAnswer } = require('../controllers/forum');
+const { getQueries, postAnswer, deleteQuery } = require('../controllers/forum');
 
 const router = express.Router();
 
@@ -19,5 +19,6 @@ router.delete('/bill/:id', authenticateExecom, deleteBill);
 router.post('/logout', authenticateExecom, logout);
 router.get('/forum/queries', authenticateExecom, getQueries);
 router.post('/forum/answer', authenticateExecom, postAnswer);
+router.delete('/forum/queries/:id', authenticateExecom, deleteQuery);
 
 module.exports = router;
