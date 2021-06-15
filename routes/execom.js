@@ -13,7 +13,7 @@ router.post('/login', login);
 router.get('/drive-details', authenticateExecom, getDrives);
 router.get('/bill-details', authenticateExecom, getBillDetails);
 router.post('/bill-details', authenticateExecom, postBillDetails);
-router.post('send-email', authenticateExecom, sendMail);
+router.post('/send-email', authenticateExecom, sendMail);
 router.post('/change-password', authenticateExecom, changePassword);
 router.delete('/bill/:id', authenticateExecom, deleteBill);
 router.post('/logout', authenticateExecom, logout);
