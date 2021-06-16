@@ -22,7 +22,7 @@ const login = async (req, res, next) => {
   const { designation, password } = req.body;
 
   try {
-    validateString(designation, 5, 50, 'Designation', true);
+    validateString(designation, 3, 50, 'Designation', true);
     validatePassword(password, 'Password', true);
   } catch (error) {
     return next(error);

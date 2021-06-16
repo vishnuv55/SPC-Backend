@@ -10,7 +10,7 @@ const postQuery = async (req, res, next) => {
   const { question } = req.body;
   const { _id, name } = req.user;
   try {
-    validateString(question, 10, 100, 'Question', true);
+    validateString(question, 10, 128, 'Question', true);
   } catch (error) {
     return next(error);
   }
@@ -51,7 +51,7 @@ const postAnswer = async (req, res, next) => {
   const { answer, id } = req.body;
   try {
     validateMongooseId(id, 'ID', true);
-    validateString(answer, 10, 100, 'Answer', true);
+    validateString(answer, 2, 250, 'Answer', true);
   } catch (error) {
     return next(error);
   }
@@ -83,7 +83,7 @@ const editQuestion = async (req, res, next) => {
   const { question, id } = req.body;
   const { _id, name } = req.user;
   try {
-    validateString(question, 10, 100, 'Question', true);
+    validateString(question, 10, 128, 'Question', true);
     validateMongooseId(id, 'ID', true);
   } catch (error) {
     return next(error);
