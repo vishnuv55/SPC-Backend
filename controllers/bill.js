@@ -26,7 +26,7 @@ const postBillDetails = async (req, res, next) => {
     validateString(bill_title, 3, 30, 'Bill Title', true);
     validateDate(bill_date, 'Bill Date', true);
     validateNumber(bill_amount, 1, 99999999, 'Bill Amount', true);
-    validateString(bill_description, 5, 100, 'Bill Description', true);
+    validateString(bill_description, 10, 100, 'Bill Description', true);
   } catch (error) {
     return next(error);
   }

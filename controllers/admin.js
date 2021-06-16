@@ -242,17 +242,17 @@ const addNewDrive = async (req, res, next) => {
   try {
     validateString(company_name, 3, 100, 'Company Name', true);
     validateString(position, 3, 30, 'Position', true);
-    validateString(description, 3, 128, 'Description', true);
+    validateString(description, 20, 200, 'Description', true);
     validateEmail(contact_email, 'Contact Email', true);
     validateDate(drive_date, 'Drive Date', true);
     validateString(location, 3, 100, 'Location', true);
-    validateString(salary, 2, 50, 'Salary', true);
+    validateString(salary, 3, 50, 'Salary', true);
     validateUrl(url, 'URL', true);
     validateGenderArray(requirements.gender, 'Preferred gender', true);
     validateMarks(requirements.plus_two_mark, '+2 mark', true);
     validateMarks(requirements.tenth_mark, '10th mark', true);
-    validateNumber(requirements.btech_min_cgpa, 0, 100, 'Minimum CGPA', true);
-    validateNumber(requirements.number_of_backlogs, 0, 50, 'Number of backlogs', true);
+    validateNumber(requirements.btech_min_cgpa, 0, 10, 'Minimum CGPA', true);
+    validateNumber(requirements.number_of_backlogs, 0, 57, 'Number of backlogs', true);
   } catch (error) {
     return next(error);
   }
@@ -346,7 +346,7 @@ const updateExecomPassword = async (req, res, next) => {
 
   // validate Data
   try {
-    validateString(designation, 5, 50, 'Designation', true);
+    validateString(designation, 3, 50, 'Designation', true);
     validatePassword(password, 'Password', true);
   } catch (error) {
     return next(error);

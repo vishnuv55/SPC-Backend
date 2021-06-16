@@ -28,13 +28,13 @@ const sendMail = async (req, res, next) => {
   // Validating student details
   try {
     validateBranchArray(branch_list, 'Branches', false);
-    validateNumber(number_of_backlogs, 0, 40, 'Number of backlogs', false);
+    validateNumber(number_of_backlogs, 0, 57, 'Number of backlogs', false);
     validateNumber(tenth_mark, 0, 100, '10th mark', false);
     validateNumber(plus_two_mark, 0, 100, '12th mark', false);
-    validateNumber(btech_cgpa, 0, 20, 'BTech CGPA', false);
+    validateNumber(btech_cgpa, 0, 10, 'BTech CGPA', false);
     validateGenderArray(gender_list, 'Gender List', false);
-    validateString(subject, 5, 400, 'Subject', true);
-    validateString(content, 5, 5000, 'Content', true);
+    validateString(subject, 5, 128, 'Subject', true);
+    validateString(content, 5, 10000, 'Content', true);
   } catch (error) {
     return next(error);
   }

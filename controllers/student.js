@@ -22,11 +22,8 @@ const {
   validateEmail,
   validatePhone,
   validateBoolean,
-  validateStringArray,
-  validateProjects,
   validatePassword,
   validateMarks,
-  validateUrl,
   validateAddress,
   validateMongooseId,
 } = require('../helpers/validation');
@@ -47,15 +44,10 @@ const editProfile = async (req, res, next) => {
     number_of_backlogs,
     phone_number,
     address,
-    linkedin,
-    twitter,
-    github,
     guardian_name,
     guardian_contact_number,
     placement_status,
     placed_company,
-    projects,
-    programming_languages,
   } = req.body;
 
   // Validating each data
@@ -65,19 +57,14 @@ const editProfile = async (req, res, next) => {
     validateGender(gender);
     validateMarks(tenth_mark, '10th mark');
     validateMarks(plus_two_mark, '12th mark');
-    validateNumber(btech_cgpa, 0, 100, 'BTech CGPA');
-    validateNumber(number_of_backlogs, 0, 50, 'Number of backlogs');
+    validateNumber(btech_cgpa, 0, 10, 'BTech CGPA');
+    validateNumber(number_of_backlogs, 0, 57, 'Number of backlogs');
     validatePhone(phone_number);
     validateAddress(address, 'Address');
-    validateUrl(linkedin, 'LinkedIn URL');
-    validateUrl(twitter, 'Twitter URL');
-    validateUrl(github, 'Github URL');
     validateName(guardian_name, 'Guardian Name');
     validatePhone(guardian_contact_number, 'Guardian Contact Number');
     validateBoolean(placement_status, 'Placement Status');
     validateString(placed_company, 3, 100, 'Placed Company');
-    validateProjects(projects);
-    validateStringArray(programming_languages, 3, 100, 'Programming Languages');
   } catch (error) {
     return next(error);
   }
@@ -92,16 +79,11 @@ const editProfile = async (req, res, next) => {
   if (number_of_backlogs !== undefined) req.user.number_of_backlogs = number_of_backlogs;
   if (phone_number !== undefined) req.user.phone_number = phone_number;
   if (address !== undefined) req.user.address = address;
-  if (twitter !== undefined) req.user.twitter = twitter;
-  if (github !== undefined) req.user.github = github;
-  if (linkedin !== undefined) req.user.linkedin = linkedin;
   if (guardian_name !== undefined) req.user.guardian_name = guardian_name;
   if (guardian_contact_number !== undefined)
     req.user.guardian_contact_number = guardian_contact_number;
   if (placement_status !== undefined) req.user.placement_status = placement_status;
   if (placed_company !== undefined) req.user.placed_company = placed_company;
-  if (projects !== undefined) req.user.projects = projects;
-  if (programming_languages !== undefined) req.user.programming_languages = programming_languages;
 
   // Saving data to database
   try {

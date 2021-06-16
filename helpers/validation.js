@@ -343,7 +343,7 @@ const validateMarks = (marks, fieldName, isRequired) => {
     } else {
       const { percentage, cgpa } = marks;
       validateNumber(percentage, 0, 100, `Percentage in ${fieldName}`, false);
-      validateNumber(cgpa, 0, 100, `CGPA in ${fieldName}`, false);
+      validateNumber(cgpa, 0, 10, `CGPA in ${fieldName}`, false);
     }
   } else if (isRequired) {
     throw new ErrorHandler(400, `${fieldName} field cannot be empty`);
