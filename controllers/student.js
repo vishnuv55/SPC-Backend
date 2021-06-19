@@ -21,7 +21,6 @@ const {
   validateNumber,
   validateEmail,
   validatePhone,
-  validateBoolean,
   validatePassword,
   validateMarks,
   validateAddress,
@@ -46,8 +45,8 @@ const editProfile = async (req, res, next) => {
     address,
     guardian_name,
     guardian_contact_number,
-    placement_status,
     placed_company,
+    ctc,
   } = req.body;
 
   // Validating each data
@@ -63,12 +62,11 @@ const editProfile = async (req, res, next) => {
     validateAddress(address, 'Address');
     validateName(guardian_name, 'Guardian Name');
     validatePhone(guardian_contact_number, 'Guardian Contact Number');
-    validateBoolean(placement_status, 'Placement Status');
-    validateString(placed_company, 3, 100, 'Placed Company');
+    validateString(placed_company, 3, 100, 'Placed Company', false);
+    validateNumber(ctc, 1, 999999999, 'CTC', false);
   } catch (error) {
     return next(error);
   }
-
   // Updating data to req.user
   if (name !== undefined) req.user.name = name;
   if (date_of_birth !== undefined) req.user.date_of_birth = date_of_birth;
@@ -82,8 +80,9 @@ const editProfile = async (req, res, next) => {
   if (guardian_name !== undefined) req.user.guardian_name = guardian_name;
   if (guardian_contact_number !== undefined)
     req.user.guardian_contact_number = guardian_contact_number;
-  if (placement_status !== undefined) req.user.placement_status = placement_status;
   if (placed_company !== undefined) req.user.placed_company = placed_company;
+  if (ctc !== undefined) req.user.ctc = ctc;
+  req.user.placement_status = !!placed_company;
 
   // Saving data to database
   try {
@@ -119,14 +118,15 @@ const login = async (req, res, next) => {
       throw new ErrorHandler(401, 'Password does not match');
     }
     const cookieExpiryDate = getFutureDate(60);
-    const { JWT_SECRET } = process.env;
+    const { JWT_SECRET, NODE_ENV } = process.env;
+    const isProduction = NODE_ENV === 'production';
     // For signing JWT token
     const token = jwt.sign({ userType: 'student', userId: currentUser._id }, JWT_SECRET); // eslint-disable-line
     // For setting httpOnly cookie
     res.cookie('jwt', token, {
       httpOnly: true,
       expires: cookieExpiryDate,
-      secure: true,
+      secure: isProduction,
       sameSite: 'none',
     });
     res.status(200).json({ message: 'Successfully Logged In' });

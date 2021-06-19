@@ -54,7 +54,8 @@ const login = async (req, res, next) => {
     const isPasswordMatch = await bcrypt.compare(password, ADMIN_PASSWORD);
 
     if (isPasswordMatch) {
-      const { JWT_SECRET } = process.env;
+      const { JWT_SECRET, NODE_ENV } = process.env;
+      const isProduction = NODE_ENV === 'production';
 
       // For signing JWT token
       const token = jwt.sign({ userType: 'admin', userId: ADMIN_ID }, JWT_SECRET);
@@ -64,7 +65,7 @@ const login = async (req, res, next) => {
       res.cookie('jwt', token, {
         httpOnly: true,
         expires: cookieExpiryDate,
-        secure: true,
+        secure: isProduction,
         sameSite: 'none',
       });
 
@@ -124,6 +125,7 @@ const createStudent = async (req, res, next) => {
     email,
     branch,
     pass_out_year,
+    placement_status: false,
     password: hashedPassword,
   });
 
@@ -203,6 +205,7 @@ const createStudents = async (req, res, next) => {
           email,
           branch,
           pass_out_year: pass_out_year_number,
+          placement_status: false,
           password: hashedPassword,
         };
       })
@@ -499,6 +502,25 @@ const getAlumniDetails = async (req, res, next) => {
   }
   res.status(200).json(alumni);
 };
+
+const getPlacedStudents = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  const { pass_out_year } = req.body;
+  try {
+    validatePassOutYear(pass_out_year);
+  } catch (error) {
+    return next(error);
+  }
+  const placedStudents = await Student.find({ pass_out_year, placement_status: true }).select(
+    'name register_number email placed_company ctc'
+  );
+  if (!placedStudents) {
+    return next(new ErrorHandler(500, 'Unable to find Placed Students'));
+  }
+  res.status(200).json(placedStudents);
+};
 module.exports = {
   login,
   createStudent,
@@ -511,4 +533,5 @@ module.exports = {
   getRegisteredStudents,
   createAlumni,
   getAlumniDetails,
+  getPlacedStudents,
 };
