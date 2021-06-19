@@ -13,27 +13,15 @@ const alumniSchema = new Schema({
     required: true,
   },
   address: {
-    line_one: {
-      type: String,
-      required: true,
-    },
-    line_two: {
-      type: String,
-      required: true,
-    },
-    state: {
-      type: String,
-      required: true,
-    },
-    zip: {
-      type: Number,
-      required: true,
-    },
+    line_one: String,
+    line_two: String,
+    state: String,
+    zip: String,
   },
-  phone_number: {
-    type: String,
-    required: true,
-  },
+  phone_number: String,
+  placement_status: Boolean,
+  placed_company: String,
+  ctc: Number,
 });
 
 module.exports = mongoose.model('Alumni', alumniSchema);
