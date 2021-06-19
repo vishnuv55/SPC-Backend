@@ -521,6 +521,16 @@ const getPlacedStudents = async (req, res, next) => {
   }
   res.status(200).json(placedStudents);
 };
+const getStudents = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  const students = await Student.find({}).select('-password -__v');
+  if (!students) {
+    return next(new ErrorHandler(500, 'Unable to find Students'));
+  }
+  res.status(200).json(students);
+};
 module.exports = {
   login,
   createStudent,
@@ -534,4 +544,5 @@ module.exports = {
   createAlumni,
   getAlumniDetails,
   getPlacedStudents,
+  getStudents,
 };
