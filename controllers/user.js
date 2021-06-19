@@ -47,10 +47,11 @@ const logout = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
-
+  const { NODE_ENV } = process.env;
+  const isProduction = NODE_ENV === 'production';
   // Clearing cookie
   res.clearCookie('jwt', {
-    secure: true,
+    secure: isProduction,
     sameSite: 'none',
   });
 
