@@ -12,12 +12,6 @@ const alumniSchema = new Schema({
     type: String,
     required: true,
   },
-  address: {
-    line_one: String,
-    line_two: String,
-    state: String,
-    zip: String,
-  },
   phone_number: String,
   placement_status: Boolean,
   placed_company: String,
