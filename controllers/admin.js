@@ -54,8 +54,7 @@ const login = async (req, res, next) => {
     const isPasswordMatch = await bcrypt.compare(password, ADMIN_PASSWORD);
 
     if (isPasswordMatch) {
-      const { JWT_SECRET, NODE_ENV } = process.env;
-      const isProduction = NODE_ENV === 'production';
+      const { JWT_SECRET } = process.env;
 
       // For signing JWT token
       const token = jwt.sign({ userType: 'admin', userId: ADMIN_ID }, JWT_SECRET);
@@ -65,7 +64,7 @@ const login = async (req, res, next) => {
       res.cookie('jwt', token, {
         httpOnly: true,
         expires: cookieExpiryDate,
-        secure: isProduction,
+        secure: true,
         sameSite: 'none',
       });
 
@@ -464,7 +463,9 @@ const createAlumni = async (req, res, next) => {
     return next(error);
   }
 
-  const student = await Student.find({ pass_out_year }).select('name email address phone_number');
+  const student = await Student.find({ pass_out_year }).select(
+    'name email  phone_number placement_status placed_company ctc'
+  );
   if (!student) {
     return next(new ErrorHandler(500, 'Unable to find Student Details'));
   }
@@ -479,24 +480,19 @@ const getAlumniDetails = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
-  const alumni = await Alumni.aggregate([
-    {
-      $addFields: {
-        address: {
-          $concat: ['$address.line_one', ', ', '$address.line_two', ', ', '$address.state'],
-        },
-        Pin: {
-          $add: ['$address.zip'],
+  let alumni;
+  try {
+    alumni = await Alumni.aggregate([
+      {
+        $project: {
+          __v: 0,
+          _id: 0,
         },
       },
-    },
-    {
-      $project: {
-        __v: 0,
-        _id: 0,
-      },
-    },
-  ]);
+    ]);
+  } catch (error) {
+    return next(new ErrorHandler(500, 'Unable Fetch alumni details'));
+  }
   if (!alumni) {
     return next(new ErrorHandler(500, 'Unable to find Alumni Details'));
   }
@@ -521,6 +517,16 @@ const getPlacedStudents = async (req, res, next) => {
   }
   res.status(200).json(placedStudents);
 };
+const getStudents = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  const students = await Student.find({}).select('-password -__v');
+  if (!students) {
+    return next(new ErrorHandler(500, 'Unable to find Students'));
+  }
+  res.status(200).json(students);
+};
 module.exports = {
   login,
   createStudent,
@@ -534,4 +540,5 @@ module.exports = {
   createAlumni,
   getAlumniDetails,
   getPlacedStudents,
+  getStudents,
 };
