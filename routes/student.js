@@ -7,6 +7,7 @@ const {
   registerDrive,
   getDrives,
   deRegisterDrive,
+  updatePlacementStatus,
 } = require('../controllers/student');
 const { changePassword, logout } = require('../controllers/user');
 const authenticateStudent = require('../middlewares/authentication')('student');
@@ -24,5 +25,6 @@ router.post('/forum/question', authenticateStudent, postQuery);
 router.get('/forum/queries', authenticateStudent, getQueries);
 router.patch('/forum/question', authenticateStudent, editQuestion);
 router.post('/deregister-drive', authenticateStudent, deRegisterDrive);
+router.post('/placement-details', authenticateStudent, updatePlacementStatus);
 
 module.exports = router;
