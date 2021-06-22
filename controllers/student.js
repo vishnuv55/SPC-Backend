@@ -15,7 +15,6 @@ const { ErrorHandler } = require('../helpers/error');
 const { getFutureDate } = require('../helpers/date');
 const {
   validateName,
-  validateString,
   validateDateOfBirth,
   validateGender,
   validateNumber,
@@ -25,6 +24,7 @@ const {
   validateMarks,
   validateAddress,
   validateMongooseId,
+  validateString,
 } = require('../helpers/validation');
 
 const editProfile = async (req, res, next) => {
@@ -45,8 +45,6 @@ const editProfile = async (req, res, next) => {
     address,
     guardian_name,
     guardian_contact_number,
-    placed_company,
-    ctc,
   } = req.body;
 
   // Validating each data
@@ -62,8 +60,6 @@ const editProfile = async (req, res, next) => {
     validateAddress(address, 'Address');
     validateName(guardian_name, 'Guardian Name');
     validatePhone(guardian_contact_number, 'Guardian Contact Number');
-    validateString(placed_company, 3, 100, 'Placed Company', false);
-    validateNumber(ctc, 1, 999999999, 'CTC', false);
   } catch (error) {
     return next(error);
   }
@@ -80,9 +76,6 @@ const editProfile = async (req, res, next) => {
   if (guardian_name !== undefined) req.user.guardian_name = guardian_name;
   if (guardian_contact_number !== undefined)
     req.user.guardian_contact_number = guardian_contact_number;
-  if (placed_company !== undefined) req.user.placed_company = placed_company;
-  if (ctc !== undefined) req.user.ctc = ctc;
-  req.user.placement_status = !!placed_company;
 
   // Saving data to database
   try {
@@ -91,6 +84,27 @@ const editProfile = async (req, res, next) => {
     return next(new ErrorHandler(500, 'Error Updating Student data'));
   }
   res.status(200).json({ message: 'Student Profile Updated Successfully' });
+};
+const updatePlacementStatus = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  const { placed_company, ctc } = req.body;
+  try {
+    validateString(placed_company, 3, 50, 'Placed Company', false);
+    validateNumber(ctc, 500, 999999999, 'CTC', false);
+  } catch (error) {
+    return next(error);
+  }
+  if (placed_company !== undefined) req.user.placed_company = placed_company;
+  if (ctc !== undefined) req.user.ctc = ctc;
+  req.user.placement_status = !!placed_company;
+  try {
+    await req.user.save();
+  } catch (err) {
+    return next(new ErrorHandler(500, 'Error Updating Placement details'));
+  }
+  res.status(200).json({ message: 'Placement details Updated Successfully' });
 };
 
 const login = async (req, res, next) => {
@@ -272,4 +286,5 @@ module.exports = {
   registerDrive,
   getDrives,
   deRegisterDrive,
+  updatePlacementStatus,
 };
