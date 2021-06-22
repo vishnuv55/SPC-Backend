@@ -46,6 +46,7 @@ const studentSchema = new Schema({
   placement_status: Boolean,
   placed_company: String,
   ctc: Number,
+  registered_drives: [String],
 });
 
 module.exports = mongoose.model('Student', studentSchema);
