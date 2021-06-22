@@ -159,7 +159,7 @@ const registerDrive = async (req, res, next) => {
   }
 
   // Getting student register number from req.user
-  const { register_number } = req.user;
+  const { register_number, registered_drives } = req.user;
 
   // Finding drive
   const drive = await Drive.findById(id);
@@ -169,6 +169,13 @@ const registerDrive = async (req, res, next) => {
 
   // Checking if student is already registered
   const isStudentRegistered = drive.registered_students.includes(register_number);
+  const isDriveRegistered = registered_drives.includes(id);
+
+  if (!isDriveRegistered) {
+    // Updating drive in student model
+    req.user.registered_drives.push(id);
+  }
+
   if (isStudentRegistered) {
     return next(new ErrorHandler(403, 'You are already registered'));
   }
@@ -179,6 +186,7 @@ const registerDrive = async (req, res, next) => {
   // Saving updates to database
   try {
     await drive.save();
+    await req.user.save();
   } catch (error) {
     return next(new ErrorHandler(500, 'Error saving to database'));
   }
