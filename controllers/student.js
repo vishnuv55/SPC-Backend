@@ -158,7 +158,7 @@ const registerDrive = async (req, res, next) => {
     return next(error);
   }
 
-  // Getting student register number from req.user
+  // Getting student register number, registered drives from req.user
   const { register_number, registered_drives } = req.user;
 
   // Finding drive
@@ -194,6 +194,53 @@ const registerDrive = async (req, res, next) => {
   res.status(200).json({ message: 'Successfully registered to drive' });
 };
 
+const deRegisterDrive = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  // Getting id from req body
+  const { id } = req.body;
+
+  // Validating id
+  try {
+    validateMongooseId(id, 'Drive ID', true);
+  } catch (error) {
+    return next(error);
+  }
+  // Finding drive
+  const drive = await Drive.findById(id);
+  if (!drive) {
+    return next(new ErrorHandler(500, 'Error finding Drive'));
+  }
+  // Getting student register number, registered drives from req.user
+  const { register_number, registered_drives } = req.user;
+  // Checking if student is already registered
+  const isStudentRegistered = drive.registered_students.includes(register_number);
+  const isDriveRegistered = registered_drives.includes(id);
+
+  if (isDriveRegistered) {
+    // Updating drive in student model
+    const indexOfId = registered_drives.indexOf(id);
+    registered_drives.splice(indexOfId, 1);
+  }
+
+  if (!isStudentRegistered) {
+    return next(new ErrorHandler(403, 'You are not registered'));
+  }
+
+  const indexOfRegisterNumber = drive.registered_students.indexOf(register_number);
+  drive.registered_students.splice(indexOfRegisterNumber, 1);
+  // Saving updates to database
+  try {
+    await drive.save();
+    await req.user.save();
+  } catch (error) {
+    return next(new ErrorHandler(500, 'Error saving to database'));
+  }
+  // Sending success response
+  res.status(200).json({ message: 'Successfully removed registration' });
+};
+
 const getDrives = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -218,4 +265,11 @@ const getDrives = async (req, res, next) => {
   }
   res.status(200).json(drives);
 };
-module.exports = { editProfile, login, getStudentDetails, registerDrive, getDrives };
+module.exports = {
+  editProfile,
+  login,
+  getStudentDetails,
+  registerDrive,
+  getDrives,
+  deRegisterDrive,
+};
