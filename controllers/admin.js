@@ -527,6 +527,23 @@ const getStudents = async (req, res, next) => {
   }
   res.status(200).json(students);
 };
+const deleteStudent = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  const { id: studentId } = req.params;
+  try {
+    validateMongooseId(studentId, 'Id', true);
+  } catch (error) {
+    return next(error);
+  }
+
+  const student = await Student.findOneAndDelete({ _id: studentId });
+  if (!student) {
+    return next(new ErrorHandler(500, 'Error deleting Student'));
+  }
+  res.status(200).json({ message: 'Student deleted successfully' });
+};
 module.exports = {
   login,
   createStudent,
@@ -541,4 +558,5 @@ module.exports = {
   getAlumniDetails,
   getPlacedStudents,
   getStudents,
+  deleteStudent,
 };

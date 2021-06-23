@@ -91,8 +91,8 @@ const updatePlacementStatus = async (req, res, next) => {
   }
   const { placed_company, ctc } = req.body;
   try {
-    validateString(placed_company, 3, 50, 'Placed Company', false);
-    validateNumber(ctc, 500, 999999999, 'CTC', false);
+    validateString(placed_company, 3, 50, 'Placed Company', true);
+    validateNumber(ctc, 500, 999999999, 'CTC', true);
   } catch (error) {
     return next(error);
   }
