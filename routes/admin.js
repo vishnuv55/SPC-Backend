@@ -17,6 +17,7 @@ const {
   getAlumniDetails,
   getPlacedStudents,
   getStudents,
+  deleteStudent,
 } = require('../controllers/admin');
 const { logout } = require('../controllers/user');
 const { sendMail } = require('../controllers/mail');
@@ -43,5 +44,5 @@ router.post('/forum/answer', authenticateAdmin, postAnswer);
 router.delete('/forum/queries/:id', authenticateAdmin, deleteQuery);
 router.post('/placed-students', authenticateAdmin, getPlacedStudents);
 router.get('/students', authenticateAdmin, getStudents);
-
+router.delete('/student/:id', authenticateAdmin, deleteStudent);
 module.exports = router;
