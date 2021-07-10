@@ -18,8 +18,10 @@ const Student = require('../models/student');
 const Drive = require('../models/drive');
 const Execom = require('../models/execom');
 const Alumni = require('../models/alumni');
+const CreateAccountMsg = require('../helpers/account-created-alert');
 const { getFutureDate } = require('../helpers/date');
 const { ErrorHandler } = require('../helpers/error');
+const sendNewMail = require('../helpers/sendNewMail');
 const {
   validateString,
   validateName,
@@ -134,6 +136,12 @@ const createStudent = async (req, res, next) => {
   } catch (error) {
     return next(new ErrorHandler(500, 'Error saving Student to database'));
   }
+
+  const response = await sendNewMail(email, 'Your Account is Created', CreateAccountMsg);
+  if (!response.success) {
+    return next(new ErrorHandler(500, 'Student account created but sending email failed'));
+  }
+
   res.status(201).json({ message: 'Student Created' });
 };
 
@@ -152,6 +160,7 @@ const createStudents = async (req, res, next) => {
 
   let studentEmails = [];
   let studentRegisterNumbers = [];
+  const newEmails = [];
   try {
     studentEmails = await Student.find({}).distinct('email');
     studentRegisterNumbers = await Student.find({}).distinct('register_number');
@@ -181,6 +190,7 @@ const createStudents = async (req, res, next) => {
           );
         }
         studentEmails.push(email);
+        newEmails.push(email);
 
         if (studentRegisterNumbers.includes(register_number)) {
           throw new ErrorHandler(
@@ -217,6 +227,13 @@ const createStudents = async (req, res, next) => {
     await Student.insertMany(updatedArray);
   } catch (error) {
     return next(new ErrorHandler(500, 'Error saving Student to database'));
+  }
+
+  const mails = newEmails.join(', ');
+
+  const response = await sendNewMail(mails, 'Your Account is Created', CreateAccountMsg);
+  if (!response.success) {
+    return next(new ErrorHandler(500, 'Student account created but sending email failed'));
   }
 
   res.status(201).json({ message: 'Students Created' });
