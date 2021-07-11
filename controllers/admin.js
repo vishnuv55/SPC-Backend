@@ -538,7 +538,17 @@ const getStudents = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
-  const students = await Student.find({}).select('-password -__v');
+  const { pass_out_year, branch } = req.body;
+  try {
+    validateBranch(branch, 'Branch', true);
+    validatePassOutYear(pass_out_year);
+  } catch (error) {
+    return next(error);
+  }
+  const students = await Student.find({ branch, pass_out_year }).select('-password -__v');
+  if (students.length === 0) {
+    return next(new ErrorHandler(500, 'No students available based on the given criterion '));
+  }
   if (!students) {
     return next(new ErrorHandler(500, 'Unable to find Students'));
   }
