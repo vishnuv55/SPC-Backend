@@ -13,7 +13,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: 'https://cec-spc.netlify.app',
+    origin: 'https://chethas.netlify.app',
     credentials: true,
   })
 );
