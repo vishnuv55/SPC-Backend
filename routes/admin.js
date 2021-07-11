@@ -43,6 +43,6 @@ router.get('/forum/queries', authenticateAdmin, getQueries);
 router.post('/forum/answer', authenticateAdmin, postAnswer);
 router.delete('/forum/queries/:id', authenticateAdmin, deleteQuery);
 router.post('/placed-students', authenticateAdmin, getPlacedStudents);
-router.get('/students', authenticateAdmin, getStudents);
+router.post('/students', authenticateAdmin, getStudents);
 router.delete('/student/:id', authenticateAdmin, deleteStudent);
 module.exports = router;
