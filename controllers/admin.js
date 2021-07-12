@@ -574,6 +574,21 @@ const deleteStudent = async (req, res, next) => {
   }
   res.status(200).json({ message: 'Student deleted successfully' });
 };
+
+const getPlacementYearWiseReport = async (req, res, next) => {
+  if (req.error) {
+    return next(req.error);
+  }
+  let yearWiseReport;
+  try {
+    yearWiseReport = await Placement.aggregate([
+      { $group: { _id: '$pass_out_year', Placements: { $sum: 1 } } },
+    ]);
+  } catch (error) {
+    return next(new ErrorHandler(500, 'Error generating reporting'));
+  }
+  res.status(200).json(yearWiseReport);
+};
 module.exports = {
   login,
   createStudent,
@@ -589,4 +604,5 @@ module.exports = {
   getPlacedStudents,
   getStudents,
   deleteStudent,
+  getPlacementYearWiseReport,
 };
