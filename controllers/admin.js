@@ -127,7 +127,6 @@ const createStudent = async (req, res, next) => {
     email,
     branch,
     pass_out_year,
-    placement_status: false,
     password: hashedPassword,
   });
 
@@ -215,7 +214,6 @@ const createStudents = async (req, res, next) => {
           email,
           branch,
           pass_out_year: pass_out_year_number,
-          placement_status: false,
           password: hashedPassword,
         };
       })
