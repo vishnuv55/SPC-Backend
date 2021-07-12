@@ -177,6 +177,15 @@ const getStudentDetails = async (req, res, next) => {
   // Splitting confidential data from req,user
   const { password, __v, ...studentData } = req.user.toObject();
 
+  // Updating placement data to student details
+
+  const { register_number } = req.user;
+  const placement = await Placement.findOne({ register_number });
+  if (placement) {
+    studentData.placed_company = placement.placed_company;
+    studentData.ctc = placement.ctc;
+  }
+
   res.status(200).json(studentData);
 };
 
