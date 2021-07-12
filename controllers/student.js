@@ -9,8 +9,10 @@
  */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const Student = require('../models/student');
 const Drive = require('../models/drive');
+const Placement = require('../models/placement');
 const { ErrorHandler } = require('../helpers/error');
 const { getFutureDate } = require('../helpers/date');
 const {
@@ -90,20 +92,40 @@ const updatePlacementStatus = async (req, res, next) => {
     return next(req.error);
   }
   const { placed_company, ctc } = req.body;
+  const { name, email, phone_number, register_number, pass_out_year } = req.user;
   try {
     validateString(placed_company, 3, 50, 'Placed Company', true);
     validateNumber(ctc, 500, 999999999, 'CTC', true);
   } catch (error) {
     return next(error);
   }
-  if (placed_company !== undefined) req.user.placed_company = placed_company;
-  if (ctc !== undefined) req.user.ctc = ctc;
-  req.user.placement_status = !!placed_company;
-  try {
-    await req.user.save();
-  } catch (err) {
-    return next(new ErrorHandler(500, 'Error Updating Placement details'));
+  const isPlacement = await Placement.findOne({ register_number });
+  if (!isPlacement) {
+    const placement = new Placement({
+      _id: mongoose.Types.ObjectId(),
+      name,
+      register_number,
+      email,
+      phone_number,
+      pass_out_year,
+      placed_company,
+      ctc,
+    });
+    try {
+      await placement.save();
+    } catch (error) {
+      return next(new ErrorHandler(500, 'Error updating  placement details'));
+    }
+  } else {
+    const placement = await Placement.findOneAndUpdate(
+      { register_number },
+      { placed_company, ctc }
+    );
+    if (!placement) {
+      return next(new ErrorHandler(500, 'Error updating  placement details'));
+    }
   }
+
   res.status(200).json({ message: 'Placement details Updated Successfully' });
 };
 
@@ -154,6 +176,15 @@ const getStudentDetails = async (req, res, next) => {
   }
   // Splitting confidential data from req,user
   const { password, __v, ...studentData } = req.user.toObject();
+
+  // Updating placement data to student details
+
+  const { register_number } = req.user;
+  const placement = await Placement.findOne({ register_number });
+  if (placement) {
+    studentData.placed_company = placement.placed_company;
+    studentData.ctc = placement.ctc;
+  }
 
   res.status(200).json(studentData);
 };

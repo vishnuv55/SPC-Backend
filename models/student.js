@@ -43,9 +43,6 @@ const studentSchema = new Schema({
     type: String,
     required: true,
   },
-  placement_status: Boolean,
-  placed_company: String,
-  ctc: Number,
   registered_drives: [String],
 });
 
