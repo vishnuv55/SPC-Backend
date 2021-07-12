@@ -528,7 +528,7 @@ const getPlacedStudents = async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
-  const placedStudents = await Placement.find({ pass_out_year });
+  const placedStudents = await Placement.find({ pass_out_year }).select('-_id -__v');
   if (!placedStudents) {
     return next(new ErrorHandler(500, 'Unable to find Placed Students'));
   }
