@@ -532,6 +532,9 @@ const getPlacedStudents = async (req, res, next) => {
   if (!placedStudents) {
     return next(new ErrorHandler(500, 'Unable to find Placed Students'));
   }
+  if (placedStudents.length === 0) {
+    return next(new ErrorHandler(500, 'No placed students for this year'));
+  }
   res.status(200).json(placedStudents);
 };
 const getStudents = async (req, res, next) => {
