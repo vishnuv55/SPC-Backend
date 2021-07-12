@@ -18,6 +18,7 @@ const Student = require('../models/student');
 const Drive = require('../models/drive');
 const Execom = require('../models/execom');
 const Alumni = require('../models/alumni');
+const Placement = require('../models/placement');
 const CreateAccountMsg = require('../helpers/account-created-alert');
 const { getFutureDate } = require('../helpers/date');
 const { ErrorHandler } = require('../helpers/error');
@@ -513,6 +514,9 @@ const getAlumniDetails = async (req, res, next) => {
   if (!alumni) {
     return next(new ErrorHandler(500, 'Unable to find Alumni Details'));
   }
+  if (alumni.length === 0) {
+    return next(new ErrorHandler(500, 'No Alumni Details Found '));
+  }
   res.status(200).json(alumni);
 };
 
@@ -526,9 +530,7 @@ const getPlacedStudents = async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
-  const placedStudents = await Student.find({ pass_out_year, placement_status: true }).select(
-    'name register_number email placed_company ctc'
-  );
+  const placedStudents = await Placement.find({ pass_out_year });
   if (!placedStudents) {
     return next(new ErrorHandler(500, 'Unable to find Placed Students'));
   }
