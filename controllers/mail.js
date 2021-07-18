@@ -1,5 +1,18 @@
-const { ErrorHandler } = require('../helpers/error');
-const sendNewMail = require('../helpers/sendNewMail');
+/**
+ *
+ *
+ *
+ * Controllers to handles all Mail specific functions
+ *
+ * @author Vishnu viswambharan
+ * @github https://github.com/vishnuv55
+ *
+ * @author Anandhakrishnan M
+ * @github https://github.com/anandhakrishnanm
+ *
+ *
+ */
+
 const {
   validateString,
   validateNumber,
@@ -7,7 +20,15 @@ const {
   validateGenderArray,
 } = require('../helpers/validation');
 const Student = require('../models/student');
+const { ErrorHandler } = require('../helpers/error');
+const sendNewMail = require('../helpers/sendNewMail');
 
+/**
+ *
+ *
+ * Controller to send emails to student
+ *
+ */
 const sendMail = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -78,7 +99,6 @@ const sendMail = async (req, res, next) => {
     return next(new ErrorHandler(500, response.errorMsg));
   }
 
-  // Sending success response
   res.status(200).json({
     message: 'Mail has been successfully send',
     accepted: response.accepted,

@@ -1,7 +1,21 @@
+/**
+ *
+ *
+ *
+ *  Helper function to send emails
+ *
+ *
+ * @author Vishnu viswambharan
+ * @github https://github.com/vishnuv55
+ *
+ */
+
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 
 /**
+ *
+ * Function to send mail using node mailer
  *
  * @param {String} to String of students emails separated by comma
  * @param {String} subject The subject of the email

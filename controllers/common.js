@@ -1,6 +1,26 @@
+/**
+ *
+ *
+ *
+ * Controller to check login status
+ *
+ * @author Anandhakrishnan M
+ * @github https://github.com/anandhakrishnanm
+ *
+ * @author Vishnu viswambharan
+ * @github https://github.com/vishnuv55
+ *
+ */
+
 const jwt = require('jsonwebtoken');
+
 const { ErrorHandler } = require('../helpers/error');
 
+/**
+ *
+ * Controller to check the if the user is logged in or not
+ *
+ */
 const isUserLoggedIn = (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -19,6 +39,7 @@ const isUserLoggedIn = (req, res, next) => {
     const { userType } = jwt.verify(token, process.env.JWT_SECRET);
 
     // Sending user type as response
+
     res.status(200).json({ is_user_logged_in: true, user_type: userType });
   } catch (err) {
     return next(new ErrorHandler(403, 'JWT Token is invalid'));

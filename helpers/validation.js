@@ -1,3 +1,16 @@
+/**
+ *
+ *
+ *
+ * Validation functions
+ *
+ * @author Anandhakrishnan M
+ * @github https://github.com/anandhakrishnanm
+ *
+ * @author Vishnu viswambharan
+ * @github https://github.com/vishnuv55
+ *
+ */
 const { ErrorHandler } = require('./error');
 
 /**
@@ -225,6 +238,7 @@ const validateGender = (gender, fieldName = 'Gender', isRequired = false) => {
 
 /**
  *
+ * Validator function to validate gender input as array
  * @param {Array} genderList Array of all genders to be validated
  * @param {String} [fieldName] Field name to be displayed in error message.
  * @param {Boolean} [isRequired] Is this field required or not
@@ -269,7 +283,7 @@ const validatePassword = (password, fieldName = 'Password', isRequired = false) 
 
 /**
  *
- * A validator function to validate ID
+ * A validator function to validate Mongoose ID
  * @param {String} id ID to be validated
  * @param {String} [fieldName] Field name to be displayed in error message.
  * @param {Boolean} [isRequired] Is this field required or not
@@ -285,6 +299,7 @@ const validateMongooseId = (id, fieldName = 'Id', isRequired = false) => {
     throw new ErrorHandler(400, `${fieldName} field cannot be empty`);
   }
 };
+
 /**
  *
  * A validator function for Projects Array
@@ -393,7 +408,7 @@ const validateAddress = (address, fieldName = 'Address', isRequired = false) => 
 };
 
 /**
- *
+ * Validator function for validating branches
  * @param {Array} branch branch name to be validated
  * @param {String} [fieldName] Field name to be displayed in error message.
  * @param {Boolean} [isRequired] Is this field required or not
@@ -413,6 +428,7 @@ const validateBranch = (branch, fieldName = 'Branch', isRequired = false) => {
 
 /**
  *
+ * Validator function to validate Branch inputs as array
  * @param {Array} branchList Array of all branches to be validated
  * @param {String} [fieldName] Field name to be displayed in error message.
  * @param {Boolean} [isRequired] Is this field required or not
@@ -436,6 +452,7 @@ const validateBranchArray = (branchList, fieldName = 'Branch List', isRequired =
 
 /**
  *
+ * Function to validate pass out year
  * @param {Number} year Year to be validated
  */
 const validatePassOutYear = (year) => {
@@ -445,6 +462,7 @@ const validatePassOutYear = (year) => {
 
 /**
  *
+ * Validator function to validate array
  * @param {Array} array
  * @param {Number} minLength Minimum length of array
  * @param {Number} maxLength Maximum length of array
@@ -472,25 +490,25 @@ const validateArray = (array, minLength, maxLength, fieldName, canBeEmpty = true
 };
 
 module.exports = {
-  validateMarks,
-  validateString,
-  validateStringArray,
-  validateNumber,
-  validateBoolean,
+  validateUrl,
+  validateName,
   validateDate,
   validateEmail,
-  validateDateOfBirth,
+  validateArray,
+  validatePhone,
+  validateMarks,
+  validateString,
+  validateNumber,
   validateGender,
+  validateBranch,
+  validateBoolean,
+  validateAddress,
+  validateProjects,
   validatePassword,
   validateMongooseId,
-  validatePhone,
-  validateName,
-  validateProjects,
-  validateUrl,
-  validateAddress,
-  validateBranch,
+  validateStringArray,
+  validateDateOfBirth,
   validateBranchArray,
   validateGenderArray,
   validatePassOutYear,
-  validateArray,
 };

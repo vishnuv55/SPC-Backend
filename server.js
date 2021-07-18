@@ -1,8 +1,21 @@
-const express = require('express');
+/**
+ *
+ *
+ *
+ * @author Anandhakrishnan M
+ * @github https://github.com/anandhakrishnanm
+ *
+ * @author Vishnu viswambharan
+ * @github https://github.com/vishnuv55
+ *
+ */
+
 const cors = require('cors');
+const morgan = require('morgan');
+const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const morgan = require('morgan');
+
 const { handleError } = require('./helpers/error');
 
 const apiRouter = require('./routes/api');
@@ -11,6 +24,7 @@ require('dotenv').config();
 
 const app = express();
 
+// Including cors
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
@@ -38,7 +52,10 @@ mongoose
   .then(() => console.log('Database Connected Successfully')) // eslint-disable-line
   .catch((error) => console.log('ERROR : Database Connection Failed', error)); // eslint-disable-line
 
+// Including API router
 app.use('/api', apiRouter);
+
+// Including Error handler
 app.use((err, req, res, next) => {
   handleError(err, req, res, next);
 });

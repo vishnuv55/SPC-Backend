@@ -1,34 +1,46 @@
 /**
- * << Controller to handle student specific functionalities >>
  *
- * editProfile -> 35
- * login -> 119
- * getStudentDetails -> 158
- * registerDrive -> 168
- * getDrives -> 210
+ *
+ *
+ * Controllers to handles all Student specific functions
+ *
+ * @author Anandhakrishnan M
+ * @github https://github.com/anandhakrishnanm
+ *
+ * @author Vishnu viswambharan
+ * @github https://github.com/vishnuv55
+ *
  */
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
-const Student = require('../models/student');
+
+const {
+  validateName,
+  validateEmail,
+  validatePhone,
+  validateMarks,
+  validateGender,
+  validateNumber,
+  validateString,
+  validateAddress,
+  validatePassword,
+  validateMongooseId,
+  validateDateOfBirth,
+} = require('../helpers/validation');
 const Drive = require('../models/drive');
+const Student = require('../models/student');
 const Placement = require('../models/placement');
 const { ErrorHandler } = require('../helpers/error');
 const { getFutureDate } = require('../helpers/date');
-const {
-  validateName,
-  validateDateOfBirth,
-  validateGender,
-  validateNumber,
-  validateEmail,
-  validatePhone,
-  validatePassword,
-  validateMarks,
-  validateAddress,
-  validateMongooseId,
-  validateString,
-} = require('../helpers/validation');
 
+/**
+ *
+ *
+ * Controller to edit student details
+ *
+ */
 const editProfile = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -65,6 +77,7 @@ const editProfile = async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
+
   // Updating data to req.user
   if (name !== undefined) req.user.name = name;
   if (date_of_birth !== undefined) req.user.date_of_birth = date_of_birth;
@@ -85,21 +98,38 @@ const editProfile = async (req, res, next) => {
   } catch (err) {
     return next(new ErrorHandler(500, 'Error Updating Student data'));
   }
+
   res.status(200).json({ message: 'Student Profile Updated Successfully' });
 };
+
+/**
+ *
+ *
+ * Controller for updating student placement status
+ *
+ */
 const updatePlacementStatus = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
+  // Getting data from request
   const { placed_company, ctc } = req.body;
+
+  // Getting student details from req.user
   const { name, email, phone_number, register_number, pass_out_year } = req.user;
+
+  // Validating data
   try {
     validateString(placed_company, 3, 50, 'Placed Company', true);
     validateNumber(ctc, 500, 999999999, 'CTC', true);
   } catch (error) {
     return next(error);
   }
+
+  // Finding if the student placement status already exist
   const isPlacement = await Placement.findOne({ register_number });
+
+  // If student placement status does not exist creating new placement
   if (!isPlacement) {
     const placement = new Placement({
       _id: mongoose.Types.ObjectId(),
@@ -111,16 +141,21 @@ const updatePlacementStatus = async (req, res, next) => {
       placed_company,
       ctc,
     });
+
+    // Saving placement Data
     try {
       await placement.save();
     } catch (error) {
       return next(new ErrorHandler(500, 'Error updating  placement details'));
     }
   } else {
+    // Finding and updating placement status since it exist
     const placement = await Placement.findOneAndUpdate(
       { register_number },
       { placed_company, ctc }
     );
+
+    // Send error if updating status failed
     if (!placement) {
       return next(new ErrorHandler(500, 'Error updating  placement details'));
     }
@@ -129,6 +164,12 @@ const updatePlacementStatus = async (req, res, next) => {
   res.status(200).json({ message: 'Placement details Updated Successfully' });
 };
 
+/**
+ *
+ *
+ * Login controller for student
+ *
+ */
 const login = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -148,6 +189,7 @@ const login = async (req, res, next) => {
     if (!currentUser) {
       throw new ErrorHandler(404, 'Email not found');
     }
+
     // Comparing password
     const isPasswordMatch = await bcrypt.compare(password, currentUser.password);
     if (!isPasswordMatch) {
@@ -155,8 +197,10 @@ const login = async (req, res, next) => {
     }
     const cookieExpiryDate = getFutureDate(60);
     const { JWT_SECRET } = process.env;
+
     // For signing JWT token
     const token = jwt.sign({ userType: 'student', userId: currentUser._id }, JWT_SECRET); // eslint-disable-line
+
     // For setting httpOnly cookie
     res.cookie('jwt', token, {
       httpOnly: true,
@@ -164,12 +208,19 @@ const login = async (req, res, next) => {
       secure: true,
       sameSite: 'none',
     });
+
     res.status(200).json({ message: 'Successfully Logged In' });
   } catch (error) {
     return next(error);
   }
 };
 
+/**
+ *
+ *
+ * Controller to Send student details to student
+ *
+ */
 const getStudentDetails = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -181,6 +232,8 @@ const getStudentDetails = async (req, res, next) => {
 
   const { register_number } = req.user;
   const placement = await Placement.findOne({ register_number });
+
+  // Appending placement data to response
   if (placement) {
     studentData.placed_company = placement.placed_company;
     studentData.ctc = placement.ctc;
@@ -189,6 +242,12 @@ const getStudentDetails = async (req, res, next) => {
   res.status(200).json(studentData);
 };
 
+/**
+ *
+ *
+ * Controller to handle student registration for drive
+ *
+ */
 const registerDrive = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -235,10 +294,16 @@ const registerDrive = async (req, res, next) => {
   } catch (error) {
     return next(new ErrorHandler(500, 'Error saving to database'));
   }
-  // Sending success response
+
   res.status(200).json({ message: 'Successfully registered to drive' });
 };
 
+/**
+ *
+ *
+ * Controller for Un registering registered students
+ *
+ */
 const deRegisterDrive = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -259,6 +324,7 @@ const deRegisterDrive = async (req, res, next) => {
   }
   // Getting student register number, registered drives from req.user
   const { register_number, registered_drives } = req.user;
+
   // Checking if student is already registered
   const isStudentRegistered = drive.registered_students.includes(register_number);
   const isDriveRegistered = registered_drives.includes(id);
@@ -275,6 +341,7 @@ const deRegisterDrive = async (req, res, next) => {
 
   const indexOfRegisterNumber = drive.registered_students.indexOf(register_number);
   drive.registered_students.splice(indexOfRegisterNumber, 1);
+
   // Saving updates to database
   try {
     await drive.save();
@@ -282,15 +349,24 @@ const deRegisterDrive = async (req, res, next) => {
   } catch (error) {
     return next(new ErrorHandler(500, 'Error saving to database'));
   }
-  // Sending success response
+
   res.status(200).json({ message: 'Successfully removed registration' });
 };
 
+/**
+ *
+ *
+ * Controller to Send drive details to student
+ *
+ */
 const getDrives = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
+
+  // Getting Student data from req.user
   const { tenth_mark, plus_two_mark, gender, number_of_backlogs, btech_cgpa } = req.user;
+
   // Checking query parameters.
   const query = {
     ...(number_of_backlogs && { 'requirements.number_of_backlogs': { $gte: number_of_backlogs } }),
@@ -304,18 +380,23 @@ const getDrives = async (req, res, next) => {
     ...(gender && { 'requirements.gender': { $in: gender } }),
   };
 
+  // Finding drives using parameters
   const drives = await Drive.find(query).sort({ created_date: -1 });
+
+  // Sending error if drives does not exist
   if (!drives) {
     return next(new ErrorHandler(500, 'No drives available'));
   }
+
   res.status(200).json(drives);
 };
+
 module.exports = {
-  editProfile,
   login,
-  getStudentDetails,
-  registerDrive,
   getDrives,
+  editProfile,
+  registerDrive,
   deRegisterDrive,
+  getStudentDetails,
   updatePlacementStatus,
 };
