@@ -1,45 +1,53 @@
 /**
- * << Controller to handle admin specific functionalities >>
  *
- * Login -> 35
- * createStudent -> 66
- * addNewDrive -> 121
- * getDrives -> 169
- * updateStudentPassword -> 186
- * updateExecomPassword -> 222
- * deleteDrive -> 261
- * getRegisteredStudents -> 279
+ *
+ *
+ * Controllers to handles all admin specific functions
+ *
+ * @author Anandhakrishnan M
+ * @github https://github.com/anandhakrishnanm
+ *
+ * @author Vishnu viswambharan
+ * @github https://github.com/vishnuv55
  *
  */
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+
 const Student = require('../models/student');
 const Drive = require('../models/drive');
 const Execom = require('../models/execom');
+const {
+  validateUrl,
+  validateName,
+  validateDate,
+  validateArray,
+  validateEmail,
+  validateMarks,
+  validateBranch,
+  validateString,
+  validateNumber,
+  validateBoolean,
+  validatePassword,
+  validateMongooseId,
+  validateGenderArray,
+  validatePassOutYear,
+} = require('../helpers/validation');
 const Alumni = require('../models/alumni');
 const Placement = require('../models/placement');
-const CreateAccountMsg = require('../helpers/account-created-alert');
 const { getFutureDate } = require('../helpers/date');
 const { ErrorHandler } = require('../helpers/error');
 const sendNewMail = require('../helpers/sendNewMail');
-const {
-  validateString,
-  validateName,
-  validateEmail,
-  validateDate,
-  validateMarks,
-  validateNumber,
-  validateUrl,
-  validatePassword,
-  validateMongooseId,
-  validateBoolean,
-  validateGenderArray,
-  validateBranch,
-  validatePassOutYear,
-  validateArray,
-} = require('../helpers/validation');
+const CreateAccountMsg = require('../helpers/account-created-alert');
 
+/**
+ *
+ *
+ * Login controller for admin, accept password and set httpOnly cookie
+ *
+ */
 const login = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -80,15 +88,21 @@ const login = async (req, res, next) => {
   }
 };
 
+/**
+ *
+ *
+ * Controller to create a single student
+ *
+ */
 const createStudent = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
 
-  // get data from req
+  // Get data from req
   const { register_number, name, email, branch, pass_out_year } = req.body;
 
-  // validate Data
+  // Validate Data
   try {
     validateString(register_number, 5, 20, 'Register Number', true);
     validateName(name, 'Name', true);
@@ -145,13 +159,19 @@ const createStudent = async (req, res, next) => {
   res.status(201).json({ message: 'Student Created' });
 };
 
+/**
+ *
+ *
+ * Controller to create multiple students using a CSV file
+ *
+ */
 const createStudents = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
 
   const studentsArray = req.body;
-
+  // Validating reg Data
   try {
     validateArray(studentsArray, 1, 2000, 'Student Data', false);
   } catch (error) {
@@ -161,6 +181,8 @@ const createStudents = async (req, res, next) => {
   let studentEmails = [];
   let studentRegisterNumbers = [];
   const newEmails = [];
+
+  // Fetching distinct reg numbers, emails from database
   try {
     studentEmails = await Student.find({}).distinct('email');
     studentRegisterNumbers = await Student.find({}).distinct('register_number');
@@ -183,6 +205,8 @@ const createStudents = async (req, res, next) => {
         validateBranch(branch, 'Branch');
         validatePassOutYear(pass_out_year_number);
 
+        // Checking email already exists
+
         if (studentEmails.includes(email)) {
           throw new ErrorHandler(
             409,
@@ -191,6 +215,8 @@ const createStudents = async (req, res, next) => {
         }
         studentEmails.push(email);
         newEmails.push(email);
+
+        // Checking register number already exists
 
         if (studentRegisterNumbers.includes(register_number)) {
           throw new ErrorHandler(
@@ -222,14 +248,18 @@ const createStudents = async (req, res, next) => {
     return next(error);
   }
 
+  // Inserting students to database
+
   try {
     await Student.insertMany(updatedArray);
   } catch (error) {
     return next(new ErrorHandler(500, 'Error saving Student to database'));
   }
 
+  // Creating a String of emails to send email alert
   const mails = newEmails.join(', ');
 
+  // Sending emails to students about their account creation
   const response = await sendNewMail(mails, 'Your Account is Created', CreateAccountMsg);
   if (!response.success) {
     return next(new ErrorHandler(500, 'Student account created but sending email failed'));
@@ -238,6 +268,12 @@ const createStudents = async (req, res, next) => {
   res.status(201).json({ message: 'Students Created' });
 };
 
+/**
+ *
+ *
+ * Controller to create a new Placement drive
+ *
+ */
 const addNewDrive = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -297,10 +333,15 @@ const addNewDrive = async (req, res, next) => {
     return next(new ErrorHandler(500, 'Error saving Student to database'));
   }
 
-  // Sending success response
   res.status(201).json({ message: 'Drive saved successfully' });
 };
 
+/**
+ *
+ *
+ * Controller to send Placement drive details to client
+ *
+ */
 const getDrives = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -314,10 +355,15 @@ const getDrives = async (req, res, next) => {
     return next(new ErrorHandler(500, 'Error Finding Drives'));
   }
 
-  // Sending drives as response
   res.status(200).json(drives);
 };
 
+/**
+ *
+ *
+ * Controller to Update student password
+ *
+ */
 const updateStudentPassword = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -350,10 +396,15 @@ const updateStudentPassword = async (req, res, next) => {
     return next(new ErrorHandler(400, 'Student with the email does not exist'));
   }
 
-  // Sending success response
   res.status(200).json({ message: 'Password changed successfully' });
 };
 
+/**
+ *
+ *
+ * Controller to Update Execom password
+ *
+ */
 const updateExecomPassword = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -389,28 +440,45 @@ const updateExecomPassword = async (req, res, next) => {
     return next(new ErrorHandler(400, 'Execom with the designation does not exist'));
   }
 
-  // Sending success response
   res.status(200).json({ message: 'Password changed successfully' });
 };
 
+/**
+ *
+ *
+ * Controller to Delete Placement drives
+ *
+ */
 const deleteDrive = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
+
+  // Fetching data from request
   const { id: driveId } = req.params;
+
+  // Validating req Data
   try {
     validateMongooseId(driveId, 'Id', true);
   } catch (error) {
     return next(error);
   }
 
+  // Finding and deleting drive
   const drive = await Drive.findOneAndDelete({ _id: driveId });
   if (!drive) {
     return next(new ErrorHandler(500, 'Error deleting Drive'));
   }
+
   res.status(200).json({ message: 'Drive deleted successfully' });
 };
 
+/**
+ *
+ *
+ * Controller to send details Registration Information to client
+ *
+ */
 const getRegisteredStudents = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -428,6 +496,8 @@ const getRegisteredStudents = async (req, res, next) => {
     email,
     phone_number,
   } = req.body;
+
+  // Validating req Data
   try {
     validateMongooseId(id, 'ID', true);
     validateBoolean(branch, 'Branch', true);
@@ -442,6 +512,8 @@ const getRegisteredStudents = async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
+
+  // Creating requirements list
   const requirements = [
     'name',
     'register_number',
@@ -455,48 +527,77 @@ const getRegisteredStudents = async (req, res, next) => {
     email && 'email',
     phone_number && 'phone_number',
   ];
+
+  // Fetching student details from drive
   const { registered_students } = await Drive.findOne({ _id: id });
   if (!registered_students) {
     return next(new ErrorHandler(500, 'Unable to Locate Drive'));
   }
+
+  // Selecting student details
   const students = await Student.find({ register_number: { $in: registered_students } }).select(
     requirements
   );
   if (!students) {
     return next(new ErrorHandler(500, 'Unable to find Student Details'));
   }
+
   res.status(200).json(students);
 };
 
+/**
+ *
+ *
+ * Controller to create alumni
+ *
+ */
 const createAlumni = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
+
+  // Getting pass out year from request
   const { pass_out_year } = req.body;
+
+  // Validating the pass out year
   try {
     validatePassOutYear(pass_out_year);
   } catch (error) {
     return next(error);
   }
 
+  // Getting all students in the obtained year
   const student = await Student.find({ pass_out_year }).select(
     'name email  phone_number placement_status placed_company ctc'
   );
+  // Sending error is no student exist in the obtained error
   if (!student) {
     return next(new ErrorHandler(500, 'Unable to find Student Details'));
   }
+
+  // Saving data to alumni
   try {
     await Alumni.insertMany(student);
   } catch (error) {
     return next(new ErrorHandler(500, 'Unable to Create Alumni'));
   }
+
   res.status(200).json({ message: 'Alumni details created successfully' });
 };
+
+/**
+ *
+ *
+ * Controller to send alumni details to client
+ *
+ */
 const getAlumniDetails = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
   let alumni;
+
+  // Fetching Alumni data from database
   try {
     alumni = await Alumni.aggregate([
       {
@@ -509,100 +610,163 @@ const getAlumniDetails = async (req, res, next) => {
   } catch (error) {
     return next(new ErrorHandler(500, 'Unable Fetch alumni details'));
   }
+
+  // Sending error if alumni not exists
   if (!alumni) {
     return next(new ErrorHandler(500, 'Unable to find Alumni Details'));
   }
+
+  // Sending error if No alumni selected
   if (alumni.length === 0) {
     return next(new ErrorHandler(500, 'No Alumni Details Found '));
   }
+
   res.status(200).json(alumni);
 };
 
+/**
+ *
+ *
+ * Controller to send Placement details to client
+ *
+ */
 const getPlacedStudents = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
+
+  // Getting pass out year from request
   const { pass_out_year } = req.body;
+
+  // Validating the pass out year
   try {
     validatePassOutYear(pass_out_year);
   } catch (error) {
     return next(error);
   }
+
+  // Getting the Placed student details from database
   const placedStudents = await Placement.find({ pass_out_year }).select('-_id -__v');
+
+  // Sending error if student details does not exist
   if (!placedStudents) {
     return next(new ErrorHandler(500, 'Unable to find Placed Students'));
   }
+
+  // Sending error if student is empty
   if (placedStudents.length === 0) {
     return next(new ErrorHandler(500, 'No placed students for this year'));
   }
+
   res.status(200).json(placedStudents);
 };
+/**
+ *
+ *
+ * Controller to send Student details to client
+ *
+ */
+
 const getStudents = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
+
+  // Getting data from request
   const { pass_out_year, branch } = req.body;
+
+  // Validating data
   try {
     validateBranch(branch, 'Branch', true);
     validatePassOutYear(pass_out_year);
   } catch (error) {
     return next(error);
   }
+
+  // finding the student details
   const students = await Student.find({ branch, pass_out_year }).select('-password -__v');
+
+  // Sending error if student is empty
   if (students.length === 0) {
     return next(new ErrorHandler(500, 'No students available based on the given criterion '));
   }
+
+  // Sending error if find returns error
   if (!students) {
     return next(new ErrorHandler(500, 'Unable to find Students'));
   }
+
   res.status(200).json(students);
 };
+
+/**
+ *
+ *
+ * Controller to delete student
+ *
+ */
 const deleteStudent = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
+  // Getting id from request
   const { id: studentId } = req.params;
+
+  // Validating id
   try {
     validateMongooseId(studentId, 'Id', true);
   } catch (error) {
     return next(error);
   }
 
+  // finding and deleting student
   const student = await Student.findOneAndDelete({ _id: studentId });
+
+  // Sending error if delete is unsuccessful
   if (!student) {
     return next(new ErrorHandler(500, 'Error deleting Student'));
   }
+
   res.status(200).json({ message: 'Student deleted successfully' });
 };
 
+/**
+ *
+ *
+ * Controller to send Year wise Placement details to client
+ *
+ */
 const getPlacementYearWiseReport = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
   let yearWiseReport;
   try {
+    // Fetching year wise placement data
     yearWiseReport = await Placement.aggregate([
       { $group: { _id: '$pass_out_year', Placements: { $sum: 1 } } },
     ]);
   } catch (error) {
     return next(new ErrorHandler(500, 'Error generating reporting'));
   }
+
   res.status(200).json(yearWiseReport);
 };
+
 module.exports = {
   login,
-  createStudent,
-  createStudents,
-  addNewDrive,
   getDrives,
+  addNewDrive,
   deleteDrive,
-  updateStudentPassword,
-  updateExecomPassword,
-  getRegisteredStudents,
+  getStudents,
   createAlumni,
+  createStudent,
+  deleteStudent,
+  createStudents,
   getAlumniDetails,
   getPlacedStudents,
-  getStudents,
-  deleteStudent,
+  updateExecomPassword,
+  updateStudentPassword,
+  getRegisteredStudents,
   getPlacementYearWiseReport,
 };

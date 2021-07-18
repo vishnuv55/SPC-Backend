@@ -1,8 +1,16 @@
-/*
-  This middleware is used to check whether the user is authenticated or not.
-  Function verifies the cookie and store user (student,execom) data in req.user if jwt matches.
-*/
-/* eslint-disable no-console */
+/**
+ *
+ *
+ *
+ * This middleware is used to check whether the user is authenticated or not.
+ * Function verifies the cookie and store user (student,execom) data in req.user if jwt matches.
+ *
+ * @author Vishnu viswambharan
+ * @github https://github.com/vishnuv55
+ *
+ *
+ *
+ */
 
 const jwt = require('jsonwebtoken');
 const student = require('../models/student');

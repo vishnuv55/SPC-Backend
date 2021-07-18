@@ -1,6 +1,21 @@
+/**
+ *
+ *
+ *
+ * Intermediate route
+ *
+ * @author Vishnu viswambharan
+ * @github https://github.com/vishnuv55
+ *
+ *  @author Anandhakrishnan M
+ * @github https://github.com/anandhakrishnanm
+ *
+ *
+ */
+
 const express = require('express');
-const { isUserLoggedIn } = require('../controllers/common');
 const { handleNotFound } = require('../controllers/error');
+const { isUserLoggedIn } = require('../controllers/common');
 
 const adminRoute = require('./admin');
 const execomRoute = require('./execom');

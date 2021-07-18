@@ -1,7 +1,26 @@
+/**
+ *
+ *
+ *
+ * Controllers to handle all common user functions
+ *
+ * @author Vishnu viswambharan
+ * @github https://github.com/vishnuv55
+ *
+ *
+ */
+
 const bcrypt = require('bcrypt');
+
 const { ErrorHandler } = require('../helpers/error');
 const { validatePassword } = require('../helpers/validation');
 
+/**
+ *
+ *
+ * Controller for changing user password
+ *
+ */
 const changePassword = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
@@ -39,21 +58,26 @@ const changePassword = async (req, res, next) => {
     return next(new ErrorHandler(500, 'Error saving password'));
   }
 
-  // Sending success message
   res.status(200).json({ message: 'Password Successfully changed' });
 };
 
+/**
+ *
+ *
+ * Controller to handle logout
+ *
+ */
 const logout = async (req, res, next) => {
   if (req.error) {
     return next(req.error);
   }
 
+  // Clearing user cookie
   res.clearCookie('jwt', {
     secure: true,
     sameSite: 'none',
   });
 
-  // Sending success message
   res.status(200).json({ message: 'Successfully logged out' });
 };
 
